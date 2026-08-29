@@ -259,7 +259,7 @@ Would love your feedback. #buildinpublic</textarea>
         <div class="shrink-0 px-6 sm:px-7 py-5 border-t border-white/[0.06] bg-ink-900 space-y-3.5">
           <label class="flex items-center justify-between gap-3">
             <span class="text-[12px] text-zinc-500">Watermark on export</span>
-            <input id="watermark-input" type="checkbox" checked class="toggle" aria-label="Show Made with SocialPostMockup watermark" />
+            <input id="watermark-input" type="checkbox" checked class="toggle" aria-label="Show socialmockup.online watermark" />
           </label>
           <button type="button" id="download-btn"
             class="w-full min-h-[48px] rounded-xl bg-white text-ink-950 text-[14px] font-semibold tracking-tight shadow-glow hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none">
@@ -396,7 +396,7 @@ Would love your feedback. #buildinpublic</textarea>
     function watermarkMarkup(tone) {
       if (!state.watermark) return '';
       const color = tone === 'dark' ? 'rgba(231,233,234,.38)' : 'rgba(0,0,0,.32)';
-      return `<div class="card-watermark" style="color:${color}">Made with SocialPostMockup</div>`;
+      return `<div class="card-watermark" style="color:${color}">socialmockup.online</div>`;
     }
 
     function linkedInBody() {
