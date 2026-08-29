@@ -764,16 +764,16 @@ Would love your feedback. #buildinpublic</textarea>
       } else if (window.va) {
         window.va('event', { name: 'Download Image', data: analyticsData });
       }
-      const body = JSON.stringify(entry);
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon('/api/download-log', new Blob([body], { type: 'application/json' }));
-        return;
-      }
       fetch('/api/download-log', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-        keepalive: true
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(entry),
+        keepalive: true,
+        cache: 'no-store',
+        redirect: 'error'
       }).catch(() => {});
     }
 

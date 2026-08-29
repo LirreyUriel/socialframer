@@ -1,12 +1,20 @@
 export default function handler(req, res) {
+  res.setHeader('Allow', 'POST');
+  res.setHeader('Cache-Control', 'no-store');
+
   if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST');
-    return res.status(405).json({ ok: false });
+    return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
   }
 
-  const payload = typeof req.body === 'string'
-    ? JSON.parse(req.body || '{}')
-    : (req.body || {});
+  let payload = req.body;
+  if (typeof payload === 'string') {
+    try {
+      payload = JSON.parse(payload || '{}');
+    } catch {
+      return res.status(400).json({ ok: false, error: 'Invalid JSON' });
+    }
+  }
+  payload = payload && typeof payload === 'object' ? payload : {};
 
   console.log('[download]', {
     at: payload.at,
