@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocialPostMockup</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23090b10'/%3E%3Crect x='6' y='8' width='16' height='16' rx='4' fill='%235b8cff'/%3E%3Crect x='10' y='8' width='16' height='16' rx='4' fill='%23f472b6' opacity='.9'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            ink: { 950: '#07080c', 900: '#0c0e14', 850: '#12151d', 800: '#181c27' }
+          },
+          boxShadow: {
+            card: '0 24px 80px -20px rgba(0,0,0,.55)',
+            glow: '0 0 0 1px rgba(255,255,255,.06), 0 20px 50px -20px rgba(0,0,0,.7)'
+          }
+        }
+      }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { height: 100%; }
+    body { background: #07080c; }
+    @media (min-width: 1024px) {
+      body { overflow: hidden; }
+    }
+    .app-grid {
+      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0);
+      background-size: 22px 22px;
+    }
+    .preview-wash { transition: background 400ms ease, box-shadow 400ms ease; }
+    .preview-wash[data-platform="linkedin"] {
+      background:
+        radial-gradient(900px 420px at 70% 20%, rgba(10,102,194,.22), transparent 60%),
+        radial-gradient(700px 360px at 20% 90%, rgba(56,189,248,.08), transparent 55%);
+    }
+    .preview-wash[data-platform="x"] {
+      background:
+        radial-gradient(900px 420px at 70% 20%, rgba(231,233,234,.08), transparent 60%),
+        radial-gradient(700px 360px at 20% 90%, rgba(29,155,240,.12), transparent 55%);
+    }
+    .preview-wash[data-platform="instagram"] {
+      background:
+        radial-gradient(800px 400px at 80% 10%, rgba(225,48,108,.18), transparent 55%),
+        radial-gradient(700px 380px at 10% 90%, rgba(245,133,41,.14), transparent 55%);
+    }
+    .ig-ring {
+      background: linear-gradient(135deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
+      padding: 2px;
+      border-radius: 9999px;
+    }
+    .dropzone { transition: border-color 160ms ease, background 160ms ease; }
+    .dropzone.dragover { border-color: #93c5fd; background: rgba(147,197,253,.08); }
+    #preview-card { -webkit-font-smoothing: antialiased; }
+    .field:focus-within { border-color: #64748b; }
+    input[type="file"] { display: none; }
+  </style>
+</head>
+<body class="font-sans text-zinc-100 antialiased">
+  <div class="min-h-full lg:h-full flex flex-col">
+    <header class="shrink-0 border-b border-white/5 bg-ink-950/90 backdrop-blur-xl">
+      <div class="px-5 sm:px-7 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="relative h-8 w-8 shrink-0">
+            <span class="absolute left-0 top-1 h-5 w-5 rounded-md bg-sky-400"></span>
+            <span class="absolute left-2.5 top-1 h-5 w-5 rounded-md bg-pink-400/90"></span>
+          </div>
+          <div class="min-w-0">
+            <h1 class="text-[15px] font-semibold tracking-tight">SocialPostMockup</h1>
+            <p class="text-[11px] text-zinc-500 hidden sm:block">Design a post. Export a pixel-perfect PNG.</p>
+          </div>
+        </div>
+        <span class="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Client-side</span>
+      </div>
+    </header>
+
+    <main class="flex-1 grid lg:grid-cols-[380px_1fr] min-h-0 lg:overflow-hidden">
+      <aside class="border-b lg:border-b-0 lg:border-r border-white/5 bg-ink-900 min-h-0 lg:h-full flex flex-col">
+        <form id="controls" class="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1" autocomplete="off">
+          <section class="space-y-3">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Platform</label>
+            <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-ink-950 ring-1 ring-white/5" role="tablist">
+              <button type="button" data-platform="linkedin" title="LinkedIn" class="platform-btn h-10 rounded-lg text-[13px] font-medium">LinkedIn</button>
+              <button type="button" data-platform="x" title="X (Twitter)" class="platform-btn h-10 rounded-lg text-[13px] font-medium">X</button>
+              <button type="button" data-platform="instagram" title="Instagram" class="platform-btn h-10 rounded-lg text-[13px] font-medium">Instagram</button>
+            </div>
+          </section>
+
+          <section class="space-y-3">
+            <label class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Profile</label>
+            <div class="space-y-3">
+              <label class="block space-y-1.5">
+                <span class="text-xs text-zinc-400">Profile name</span>
+                <input id="name-input" type="text" value="John Doe"
+                  class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              </label>
+              <label class="block space-y-1.5">
+                <span id="handle-label" class="text-xs text-zinc-400">Title</span>
+                <input id="handle-input" type="text" value="Product Maker & Creator"
+                  class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              </label>
+              <label class="flex items-center justify-between gap-3 rounded-xl bg-ink-950 px-3.5 h-11 ring-1 ring-white/10">
+                <span class="text-sm text-zinc-300">Verified badge</span>
+                <input id="verified-input" type="checkbox" checked class="h-4 w-4 accent-sky-400" />
+              </label>
+              <div>
+                <span class="text-xs text-zinc-400">Avatar</span>
+                <div id="avatar-drop" class="dropzone mt-1.5 flex items-center gap-3 rounded-xl border border-dashed border-white/15 bg-ink-950 p-3">
+                  <img id="avatar-thumb" alt="" class="h-11 w-11 rounded-full object-cover bg-zinc-800 hidden" />
+                  <div id="avatar-placeholder" class="h-11 w-11 rounded-full bg-zinc-800 grid place-items-center text-xs font-semibold text-zinc-300">JD</div>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm text-zinc-200 truncate">Upload a photo</p>
+                    <p class="text-[11px] text-zinc-500">PNG or JPG · drag & drop</p>
+                  </div>
+                  <button type="button" id="avatar-clear" class="hidden text-xs text-zinc-400 hover:text-zinc-200">Remove</button>
+                  <button type="button" id="avatar-pick" class="text-xs font-medium text-sky-300 hover:text-sky-200">Browse</button>
+                  <input id="avatar-file" type="file" accept="image/*" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500" for="text-input">Post text</label>
+              <span id="char-count" class="text-[11px] tabular-nums text-zinc-500">0</span>
+            </div>
+            <textarea id="text-input" rows="5"
+              class="field w-full resize-y rounded-xl bg-ink-950 px-3.5 py-3 text-sm leading-relaxed ring-1 ring-white/10 outline-none placeholder:text-zinc-600">Just shipped something I've been quietly building.
+
+A small tool that turns any idea into a polished social post — instantly.
+
+Would love your feedback. #buildinpublic</textarea>
+          </section>
+
+          <section class="space-y-2">
+            <span class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Embedded image</span>
+            <div id="image-drop" class="dropzone rounded-xl border border-dashed border-white/15 bg-ink-950 p-3">
+              <div id="image-empty" class="flex items-center gap-3">
+                <div class="h-11 w-11 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-4.5-4.5L9 18"/></svg>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm text-zinc-200">Optional screenshot</p>
+                  <p class="text-[11px] text-zinc-500">Shown inside the post card</p>
+                </div>
+                <button type="button" id="image-pick" class="text-xs font-medium text-sky-300 hover:text-sky-200">Browse</button>
+              </div>
+              <div id="image-filled" class="hidden items-center gap-3">
+                <img id="image-thumb" alt="" class="h-14 w-20 rounded-lg object-cover bg-zinc-800" />
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm text-zinc-200 truncate">Image attached</p>
+                  <p class="text-[11px] text-zinc-500">Appears in the live preview</p>
+                </div>
+                <button type="button" id="image-clear" class="text-xs text-zinc-400 hover:text-zinc-200">Remove</button>
+              </div>
+              <input id="image-file" type="file" accept="image/*" />
+            </div>
+          </section>
+
+        </form>
+        <div class="shrink-0 p-5 sm:p-6 pt-3 border-t border-white/5 bg-ink-900">
+          <button type="button" id="download-btn"
+            class="w-full h-12 rounded-xl bg-white text-ink-950 text-sm font-semibold tracking-tight shadow-glow hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none">
+            Download as PNG
+          </button>
+        </div>
+      </aside>
+
+      <section id="preview-stage" class="preview-wash app-grid relative min-h-[640px] lg:min-h-0 lg:h-full overflow-auto grid place-items-center p-5 sm:p-10" data-platform="linkedin">
+        <div id="preview-mount" class="w-full max-w-[560px]"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const DEFAULTS = {
+      linkedin: { handle: 'Product Maker & Creator', label: 'Title / headline' },
+      x: { handle: 'johndoe', label: 'Handle' },
+      instagram: { handle: 'johndoe', label: 'Handle' }
+    };
+
+    const state = {
+      platform: 'linkedin',
+      name: 'John Doe',
+      handle: DEFAULTS.linkedin.handle,
+      verified: true,
+      avatar: null,
+      text: document.getElementById('text-input').value,
+      image: null
+    };
+
+    const els = {
+      name: document.getElementById('name-input'),
+      handle: document.getElementById('handle-input'),
+      handleLabel: document.getElementById('handle-label'),
+      verified: document.getElementById('verified-input'),
+      text: document.getElementById('text-input'),
+      charCount: document.getElementById('char-count'),
+      mount: document.getElementById('preview-mount'),
+      stage: document.getElementById('preview-stage'),
+      download: document.getElementById('download-btn'),
+      avatarFile: document.getElementById('avatar-file'),
+      avatarDrop: document.getElementById('avatar-drop'),
+      avatarThumb: document.getElementById('avatar-thumb'),
+      avatarPlaceholder: document.getElementById('avatar-placeholder'),
+      avatarClear: document.getElementById('avatar-clear'),
+      imageFile: document.getElementById('image-file'),
+      imageDrop: document.getElementById('image-drop'),
+      imageEmpty: document.getElementById('image-empty'),
+      imageFilled: document.getElementById('image-filled'),
+      imageThumb: document.getElementById('image-thumb')
+    };
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function initials(name) {
+      return name
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0].toUpperCase())
+        .join('') || 'JD';
+    }
+
+    function defaultAvatarUrl(name) {
+      const label = initials(name);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#818cf8"/></linearGradient></defs><rect width="80" height="80" fill="url(#g)"/><text x="50%" y="54%" text-anchor="middle" font-family="Inter,Arial" font-size="28" font-weight="700" fill="white">${label}</text></svg>`;
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function avatarSrc() {
+      return state.avatar || defaultAvatarUrl(state.name);
+    }
+
+    function formatText(text, platform) {
+      const color = platform === 'x' ? '#1d9bf0' : platform === 'linkedin' ? '#0A66C2' : '#00376b';
+      return escapeHtml(text)
+        .replace(/(https?:\/\/[^\s<]+)/g, `<span style="color:${color}">$1</span>`)
+        .replace(/(^|[\s])(@[\w.]+)/g, `$1<span style="color:${color}">$2</span>`)
+        .replace(/(^|[\s])(#[\w]+)/g, `$1<span style="color:${color}">$2</span>`)
+        .replace(/\n/g, '<br>');
+    }
+
+    function handleValue() {
+      if (state.platform === 'linkedin') return state.handle;
+      const raw = state.handle.trim();
+      if (!raw || raw === DEFAULTS.linkedin.handle || /\s/.test(raw)) {
+        return state.name.toLowerCase().replace(/[^a-z0-9]+/g, '') || 'johndoe';
+      }
+      return raw.replace(/^@/, '');
+    }
+
+    function verifiedBadge(platform) {
+      if (!state.verified) return '';
+      if (platform === 'x') {
+        return `<svg class="shrink-0" width="18" height="18" viewBox="0 0 22 22" aria-label="Verified"><circle cx="11" cy="11" r="10" fill="#1d9bf0"/><path d="M9.4 14.7 6.6 11.9l1.2-1.2 1.6 1.6 4.7-4.7 1.2 1.2-5.9 5.9z" fill="#fff"/></svg>`;
+      }
+      if (platform === 'linkedin') {
+        return `<svg class="shrink-0" width="16" height="16" viewBox="0 0 16 16" aria-label="Verified"><circle cx="8" cy="8" r="8" fill="#0A66C2"/><path d="M6.7 10.7 4.6 8.6l.9-.9 1.2 1.2 3.3-3.3.9.9-4.2 4.2z" fill="#fff"/></svg>`;
+      }
+      return `<svg class="shrink-0" width="14" height="14" viewBox="0 0 16 16" aria-label="Verified"><circle cx="8" cy="8" r="8" fill="#3897f0"/><path d="M6.7 10.7 4.6 8.6l.9-.9 1.2 1.2 3.3-3.3.9.9-4.2 4.2z" fill="#fff"/></svg>`;
+    }
+
+    function moreIcon(color) {
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="${color}"><circle cx="6" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18" cy="12" r="1.6"/></svg>`;
+    }
+
+    function actionIcon(path, color = 'currentColor') {
+      return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+    }
+
+    function renderLinkedIn() {
+      const image = state.image
+        ? `<div class="px-4 pt-1 pb-2"><img src="${state.image}" alt="" class="w-full max-h-[420px] rounded-lg object-cover ring-1 ring-black/10" /></div>`
+        : '';
+      return `
+        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#000000e6] shadow-card" style="font-family:Inter,system-ui,sans-serif">
+          <div class="px-4 pt-3.5 pb-2">
+            <div class="flex items-start gap-2.5">
+              <img src="${avatarSrc()}" alt="" class="h-12 w-12 rounded-full object-cover" />
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1">
+                  <span class="truncate text-[14px] font-semibold leading-5">${escapeHtml(state.name)}</span>
+                  ${verifiedBadge('linkedin')}
+                </div>
+                <p class="truncate text-[12px] leading-4 text-black/60">${escapeHtml(state.handle)}</p>
+                <p class="flex items-center gap-1 text-[12px] text-black/55">2h · <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.3A6.7 6.7 0 1 0 8 14.7 6.7 6.7 0 0 0 8 1.3Zm-.1 1.5C6.4 3 5.1 4.6 4.7 6.7h3.2V2.8ZM8.7 2.8v3.9h3.2c-.4-2.1-1.7-3.7-3.2-3.9ZM3.8 8c0-.4 0-.9.1-1.3h-2A5.3 5.3 0 0 0 3.3 11h2.2A13 13 0 0 1 3.8 8Zm1 4.7h3.1v3.8c-1.8-.3-3.3-2.2-3.7-4.5.2.3.4.5.6.7Zm4 3.8V12.7h3.1c-.4 2.3-1.9 4.2-3.7 4.5.2-.2.4-.4.6-.7ZM10.5 11H13a5.3 5.3 0 0 0 1.4-4.3h-2c.1.4.1.9.1 1.3a13 13 0 0 1-2 3ZM4.7 9.3c.3 1.4.8 2.6 1.4 3.4h3.8c.6-.8 1.1-2 1.4-3.4H4.7Z"/></svg></p>
+              </div>
+              ${moreIcon('#666')}
+            </div>
+            <p class="mt-2 text-[14px] leading-[1.4]">${formatText(state.text, 'linkedin')}</p>
+          </div>
+          ${image}
+          <div class="px-4 py-2 flex items-center justify-between text-[12px] text-black/55">
+            <span class="flex items-center gap-1.5">
+              <span class="flex -space-x-1">
+                <span class="h-4 w-4 rounded-full bg-[#0A66C2] ring-2 ring-white"></span>
+                <span class="h-4 w-4 rounded-full bg-[#df704d] ring-2 ring-white"></span>
+              </span>
+              24
+            </span>
+            <span>8 comments · 3 reposts</span>
+          </div>
+          <div class="mx-4 border-t border-black/10"></div>
+          <div class="grid grid-cols-4 px-1 py-1.5 text-[13px] font-semibold text-black/60">
+            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M7 11v9H4v-9h3zm3 9h7.2a2 2 0 0 0 1.94-1.51l1.36-5.5A1.5 1.5 0 0 0 19 11h-6l1-5.2A1.6 1.6 0 0 0 12.4 4 1.4 1.4 0 0 0 11 5.2V11H10v9z"/>')} Like</span>
+            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>')} Comment</span>
+            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M7 7h8l-2-2M17 17H9l2 2"/><path d="M17 7v3a4 4 0 0 1-4 4H7M7 17v-3a4 4 0 0 1 4-4h6"/>')} Repost</span>
+            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M22 3 11 13"/><path d="M22 3 15 21l-4-8-8-4 19-6z"/>')} Send</span>
+          </div>
+        </article>`;
+    }
+
+    function renderX() {
+      const handle = handleValue();
+      const image = state.image
+        ? `<img src="${state.image}" alt="" class="mt-3 w-full max-h-[420px] rounded-2xl object-cover ring-1 ring-[#2f3336]" />`
+        : '';
+      const meta = (icon, count) =>
+        `<span class="flex items-center gap-1.5">${icon}<span>${count}</span></span>`;
+      return `
+        <article id="preview-card" class="overflow-hidden rounded-2xl bg-black text-[#e7e9ea] shadow-card ring-1 ring-[#2f3336]" style="font-family:Inter,system-ui,sans-serif">
+          <div class="p-4">
+            <div class="flex gap-3">
+              <img src="${avatarSrc()}" alt="" class="h-10 w-10 rounded-full object-cover" />
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0 flex items-center gap-1">
+                    <span class="truncate text-[15px] font-bold leading-5">${escapeHtml(state.name)}</span>
+                    ${verifiedBadge('x')}
+                    <span class="truncate text-[15px] text-[#71767b]">@${escapeHtml(handle)} · 2h</span>
+                  </div>
+                  ${moreIcon('#71767b')}
+                </div>
+                <p class="mt-1 text-[15px] leading-[1.35]">${formatText(state.text, 'x')}</p>
+                ${image}
+                <div class="mt-3 flex items-center justify-between text-[#71767b] text-[13px] max-w-md">
+                  ${meta(actionIcon('<path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>', '#71767b'), '12')}
+                  ${meta(actionIcon('<path d="M7 7h8l-2-2M17 17H9l2 2"/><path d="M17 7v3a4 4 0 0 1-4 4H7M7 17v-3a4 4 0 0 1 4-4h6"/>', '#71767b'), '4')}
+                  ${meta(actionIcon('<path d="M12 20s-7-4.4-9.2-8.2C1 8.8 3 6 6.2 6c1.8 0 3.1 1 3.8 2 0.7-1 2-2 3.8-2C17 6 19 8.8 17.2 11.8 15 15.6 12 20 12 20z"/>', '#71767b'), '89')}
+                  ${meta(actionIcon('<path d="M4 19V9M10 19V5M16 19v-7M22 19V8"/>', '#71767b'), '2.1K')}
+                  ${actionIcon('<path d="M12 5v10M7 9l5-5 5 5M5 19h14"/>', '#71767b')}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>`;
+    }
+
+    function renderInstagram() {
+      const handle = handleValue();
+      const image = state.image
+        ? `<img src="${state.image}" alt="" class="w-full max-h-[540px] object-cover" />`
+        : '';
+      return `
+        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#262626] shadow-card ring-1 ring-black/10" style="font-family:Inter,system-ui,sans-serif">
+          <div class="flex items-center gap-2.5 px-3 py-2.5">
+            <div class="ig-ring"><img src="${avatarSrc()}" alt="" class="h-8 w-8 rounded-full object-cover bg-white" /></div>
+            <div class="min-w-0 flex-1 flex items-center gap-1">
+              <span class="truncate text-[13px] font-semibold">${escapeHtml(handle)}</span>
+              ${verifiedBadge('instagram')}
+            </div>
+            ${moreIcon('#262626')}
+          </div>
+          ${image || `<div class="px-3 pb-2 text-[14px] leading-[1.4]">${formatText(state.text, 'instagram')}</div>`}
+          <div class="px-3 pt-2.5 pb-3">
+            <div class="flex items-center gap-4 text-[#262626]">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.2-8.2C1 8.8 3 6 6.2 6c1.8 0 3.1 1 3.8 2 0.7-1 2-2 3.8-2C17 6 19 8.8 17.2 11.8 15 15.6 12 20 12 20z"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-11.8 7.7L3 21l1.8-6A8.4 8.4 0 1 1 21 11.5z"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 3 11 13"/><path d="M22 3 15 21l-4-8-8-4 19-6z"/></svg>
+              <span class="ml-auto"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12a1 1 0 0 1 1 1v16l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg></span>
+            </div>
+            <p class="mt-2 text-[14px] font-semibold">128 likes</p>
+            ${state.image ? `<p class="mt-1 text-[14px] leading-[1.4]"><span class="font-semibold mr-1">${escapeHtml(handle)}</span>${formatText(state.text, 'instagram')}</p>` : ''}
+            <p class="mt-1.5 text-[10px] uppercase tracking-wide text-[#8e8e8e]">2 hours ago</p>
+          </div>
+        </article>`;
+    }
+
+    function renderPreview() {
+      const renderers = { linkedin: renderLinkedIn, x: renderX, instagram: renderInstagram };
+      els.mount.innerHTML = renderers[state.platform]();
+      els.stage.dataset.platform = state.platform;
+    }
+
+    function updatePlatformButtons() {
+      document.querySelectorAll('.platform-btn').forEach((btn) => {
+        const active = btn.dataset.platform === state.platform;
+        btn.className = `platform-btn h-10 rounded-lg text-[13px] font-medium transition ${
+          active ? 'bg-white text-ink-950 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
+        }`;
+        btn.setAttribute('aria-selected', String(active));
+      });
+    }
+
+    function updateCharCount() {
+      const length = state.text.length;
+      const limit = state.platform === 'x' ? 280 : state.platform === 'instagram' ? 2200 : 3000;
+      els.charCount.textContent = `${length} / ${limit}`;
+      els.charCount.className = `text-[11px] tabular-nums ${length > limit ? 'text-rose-400' : 'text-zinc-500'}`;
+    }
+
+    function updateHandleField() {
+      const meta = DEFAULTS[state.platform];
+      els.handleLabel.textContent = meta.label;
+      els.handle.placeholder = meta.handle;
+    }
+
+    function syncAvatarUi() {
+      els.avatarThumb.src = avatarSrc();
+      els.avatarThumb.classList.remove('hidden');
+      els.avatarPlaceholder.classList.add('hidden');
+      els.avatarClear.classList.toggle('hidden', !state.avatar);
+    }
+
+    function syncImageUi() {
+      const hasImage = Boolean(state.image);
+      els.imageEmpty.classList.toggle('hidden', hasImage);
+      els.imageFilled.classList.toggle('hidden', !hasImage);
+      els.imageFilled.classList.toggle('flex', hasImage);
+      if (hasImage) els.imageThumb.src = state.image;
+    }
+
+    function readImage(file, onLoad) {
+      if (!file || !file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = () => onLoad(reader.result);
+      reader.readAsDataURL(file);
+    }
+
+    function bindDropzone(zone, input, onFile) {
+      zone.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        zone.classList.add('dragover');
+      });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', (event) => {
+        event.preventDefault();
+        zone.classList.remove('dragover');
+        readImage(event.dataTransfer.files[0], onFile);
+      });
+      input.addEventListener('change', () => {
+        readImage(input.files[0], onFile);
+        input.value = '';
+      });
+    }
+
+    document.querySelectorAll('.platform-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const next = btn.dataset.platform;
+        const currentDefault = Object.values(DEFAULTS).some((item) => item.handle === state.handle);
+        if (currentDefault) {
+          state.handle = DEFAULTS[next].handle;
+          els.handle.value = state.handle;
+        }
+        state.platform = next;
+        updatePlatformButtons();
+        updateHandleField();
+        updateCharCount();
+        renderPreview();
+      });
+    });
+
+    els.name.addEventListener('input', () => {
+      state.name = els.name.value;
+      syncAvatarUi();
+      renderPreview();
+    });
+    els.handle.addEventListener('input', () => {
+      state.handle = els.handle.value;
+      renderPreview();
+    });
+    els.verified.addEventListener('change', () => {
+      state.verified = els.verified.checked;
+      renderPreview();
+    });
+    els.text.addEventListener('input', () => {
+      state.text = els.text.value;
+      updateCharCount();
+      renderPreview();
+    });
+
+    document.getElementById('avatar-pick').addEventListener('click', () => els.avatarFile.click());
+    document.getElementById('image-pick').addEventListener('click', () => els.imageFile.click());
+    document.getElementById('avatar-clear').addEventListener('click', (event) => {
+      event.stopPropagation();
+      state.avatar = null;
+      syncAvatarUi();
+      renderPreview();
+    });
+    document.getElementById('image-clear').addEventListener('click', () => {
+      state.image = null;
+      syncImageUi();
+      renderPreview();
+    });
+
+    bindDropzone(els.avatarDrop, els.avatarFile, (data) => {
+      state.avatar = data;
+      syncAvatarUi();
+      renderPreview();
+    });
+    bindDropzone(els.imageDrop, els.imageFile, (data) => {
+      state.image = data;
+      syncImageUi();
+      renderPreview();
+    });
+
+    els.download.addEventListener('click', async () => {
+      const card = document.getElementById('preview-card');
+      if (!card) return;
+      els.download.disabled = true;
+      els.download.textContent = 'Exporting…';
+      try {
+        const canvas = await html2canvas(card, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: null,
+          logging: false
+        });
+        const link = document.createElement('a');
+        link.download = `socialpost-${state.platform}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } finally {
+        els.download.disabled = false;
+        els.download.textContent = 'Download as PNG';
+      }
+    });
+
+    const requested = new URLSearchParams(location.search).get('platform');
+    if (requested && DEFAULTS[requested]) {
+      state.platform = requested;
+      if (Object.values(DEFAULTS).some((item) => item.handle === state.handle)) {
+        state.handle = DEFAULTS[requested].handle;
+        els.handle.value = state.handle;
+      }
+    }
+
+    updatePlatformButtons();
+    updateHandleField();
+    updateCharCount();
+    syncAvatarUi();
+    syncImageUi();
+    renderPreview();
+  </script>
+</body>
+</html>
