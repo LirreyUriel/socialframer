@@ -15,43 +15,84 @@
         extend: {
           fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
           colors: {
-            ink: { 950: '#07080c', 900: '#0c0e14', 850: '#12151d', 800: '#181c27' }
+            ink: { 950: '#050507', 900: '#0a0a0d', 850: '#101014', 800: '#16161b' }
           },
           boxShadow: {
-            card: '0 24px 80px -20px rgba(0,0,0,.55)',
-            glow: '0 0 0 1px rgba(255,255,255,.06), 0 20px 50px -20px rgba(0,0,0,.7)'
+            card: '0 30px 80px -28px rgba(0,0,0,.7)',
+            glow: '0 0 0 1px rgba(255,255,255,.06), 0 18px 40px -24px rgba(0,0,0,.8)'
           }
         }
       }
     };
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://unpkg.com/html-to-image@1.11.13/dist/html-to-image.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "@vercel/analytics": "./node_modules/@vercel/analytics/dist/index.mjs"
+      }
+    }
+  </script>
+  <script type="module">
+    try {
+      const { inject } = await import('@vercel/analytics');
+      inject();
+    } catch {
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      const script = document.createElement('script');
+      script.defer = true;
+      script.src = '/_vercel/insights/script.js';
+      document.head.appendChild(script);
+    }
+  </script>
   <style>
     :root { color-scheme: dark; }
     html, body { height: 100%; }
-    body { background: #07080c; }
-    @media (min-width: 1024px) {
-      body { overflow: hidden; }
+    body { background: #050507; }
+    .sidebar-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,.16) transparent;
+      -ms-overflow-style: none;
     }
-    .app-grid {
-      background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,.05) 1px, transparent 0);
-      background-size: 22px 22px;
+    .sidebar-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
     }
-    .preview-wash { transition: background 400ms ease, box-shadow 400ms ease; }
-    .preview-wash[data-platform="linkedin"] {
-      background:
-        radial-gradient(900px 420px at 70% 20%, rgba(10,102,194,.22), transparent 60%),
-        radial-gradient(700px 360px at 20% 90%, rgba(56,189,248,.08), transparent 55%);
+    .sidebar-scroll::-webkit-scrollbar-track,
+    .sidebar-scroll::-webkit-scrollbar-corner {
+      background: transparent;
     }
-    .preview-wash[data-platform="x"] {
-      background:
-        radial-gradient(900px 420px at 70% 20%, rgba(231,233,234,.08), transparent 60%),
-        radial-gradient(700px 360px at 20% 90%, rgba(29,155,240,.12), transparent 55%);
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,.16);
+      border-radius: 999px;
     }
-    .preview-wash[data-platform="instagram"] {
-      background:
-        radial-gradient(800px 400px at 80% 10%, rgba(225,48,108,.18), transparent 55%),
-        radial-gradient(700px 380px at 10% 90%, rgba(245,133,41,.14), transparent 55%);
+    .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,.28);
+    }
+    .preview-stage {
+      background-color: #07080c;
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,.055) 1px, transparent 0),
+        radial-gradient(900px 480px at 70% 18%, var(--wash-a), transparent 58%),
+        radial-gradient(720px 420px at 18% 92%, var(--wash-b), transparent 55%);
+      background-size: 22px 22px, auto, auto;
+      transition: background 400ms ease;
+    }
+    .preview-stage[data-platform="linkedin"] {
+      --wash-a: rgba(10,102,194,.2);
+      --wash-b: rgba(56,189,248,.08);
+    }
+    .preview-stage[data-platform="x"] {
+      --wash-a: rgba(231,233,234,.07);
+      --wash-b: rgba(29,155,240,.12);
+    }
+    .preview-stage[data-platform="instagram"] {
+      --wash-a: rgba(225,48,108,.16);
+      --wash-b: rgba(245,133,41,.12);
+    }
+    .preview-vignette {
+      pointer-events: none;
+      box-shadow: inset 0 0 160px rgba(0,0,0,.45);
     }
     .ig-ring {
       background: linear-gradient(135deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
@@ -60,8 +101,8 @@
     }
     .dropzone { transition: border-color 160ms ease, background 160ms ease; }
     .dropzone.dragover { border-color: #93c5fd; background: rgba(147,197,253,.08); }
-    #preview-card { -webkit-font-smoothing: antialiased; }
-    .field:focus-within { border-color: #64748b; }
+    #preview-card { -webkit-font-smoothing: antialiased; position: relative; }
+    .field:focus-within { border-color: #52525b; }
     input[type="file"] { display: none; }
     .toggle {
       appearance: none;
@@ -86,7 +127,6 @@
     }
     .toggle:checked { background: #38bdf8; }
     .toggle:checked::after { transform: translateX(16px); }
-    #preview-card { position: relative; }
     .card-watermark {
       position: absolute;
       right: 12px;
@@ -99,64 +139,68 @@
       user-select: none;
       white-space: nowrap;
     }
+    .limit-ring { transform: rotate(-90deg); }
   </style>
 </head>
-<body class="font-sans text-zinc-100 antialiased">
-  <div class="min-h-full lg:h-full flex flex-col">
-    <header class="shrink-0 border-b border-white/5 bg-ink-950/90 backdrop-blur-xl">
-      <div class="px-5 sm:px-7 h-16 flex items-center">
+<body class="h-screen overflow-hidden font-sans text-zinc-100 antialiased">
+  <div class="h-screen flex flex-col overflow-hidden">
+    <header class="shrink-0 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl">
+      <div class="px-6 sm:px-8 h-14 flex items-center">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="relative h-8 w-8 shrink-0">
-            <span class="absolute left-0 top-1 h-5 w-5 rounded-md bg-sky-400"></span>
-            <span class="absolute left-2.5 top-1 h-5 w-5 rounded-md bg-pink-400/90"></span>
+          <div class="relative h-7 w-7 shrink-0">
+            <span class="absolute left-0 top-1 h-4 w-4 rounded-[5px] bg-sky-400"></span>
+            <span class="absolute left-2 top-1 h-4 w-4 rounded-[5px] bg-pink-400/90"></span>
           </div>
           <div class="min-w-0">
-            <h1 class="text-[15px] font-semibold tracking-tight">SocialPostMockup</h1>
-            <p class="text-[11px] text-zinc-500 hidden sm:block">Design a post. Export a pixel-perfect PNG.</p>
+            <h1 class="text-[14px] font-semibold tracking-tight">SocialPostMockup</h1>
+            <p class="text-[11px] text-zinc-500 hidden sm:block">Studio preview · export a pixel-perfect PNG</p>
           </div>
         </div>
       </div>
     </header>
 
-    <main class="flex-1 grid lg:grid-cols-[380px_1fr] min-h-0 lg:overflow-hidden">
-      <aside class="border-b lg:border-b-0 lg:border-r border-white/5 bg-ink-900 min-h-0 lg:h-full flex flex-col">
-        <form id="controls" class="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1" autocomplete="off">
-          <section class="space-y-3">
-            <h2 class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Platform</h2>
-            <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-ink-950 ring-1 ring-white/5" role="tablist">
+    <main class="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(280px,1.05fr)] lg:grid-rows-none lg:grid-cols-[400px_minmax(0,1fr)]">
+      <aside class="border-b lg:border-b-0 lg:border-r border-white/[0.06] bg-ink-900 min-h-0 flex flex-col">
+        <form id="controls" class="sidebar-scroll px-6 sm:px-8 py-8 space-y-10 overflow-y-auto overflow-x-hidden flex-1" autocomplete="off">
+          <section class="space-y-3.5">
+            <h2 class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">Platform</h2>
+            <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-black/40 ring-1 ring-white/[0.06]" role="tablist">
               <button type="button" data-platform="linkedin" title="LinkedIn" class="platform-btn h-10 rounded-lg text-[13px] font-medium">LinkedIn</button>
               <button type="button" data-platform="x" title="X (Twitter)" class="platform-btn h-10 rounded-lg text-[13px] font-medium">X</button>
               <button type="button" data-platform="instagram" title="Instagram" class="platform-btn h-10 rounded-lg text-[13px] font-medium">Instagram</button>
             </div>
           </section>
 
-          <section class="space-y-3 pt-4 border-t border-white/5">
-            <h2 class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Author Profile</h2>
-            <div class="space-y-2.5">
-              <div class="grid grid-cols-2 gap-2.5">
-                <label class="block space-y-1.5 min-w-0">
-                  <span class="text-xs text-zinc-400">Profile name</span>
-                  <input id="name-input" type="text" value="Lirrey" placeholder="Lirrey"
-                    class="field w-full h-10 rounded-xl bg-ink-950 px-3 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
-                </label>
-                <label class="block space-y-1.5 min-w-0">
-                  <span id="handle-label" class="text-xs text-zinc-400">Headline</span>
-                  <input id="handle-input" type="text" value="Building micro-SaaS in public 🚀" placeholder="Building micro-SaaS in public 🚀"
-                    class="field w-full h-10 rounded-xl bg-ink-950 px-3 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
-                </label>
-              </div>
-              <label class="flex items-center justify-between gap-3 rounded-xl bg-ink-950 px-3.5 h-10 ring-1 ring-white/10">
+          <section class="space-y-4 pt-8 border-t border-white/[0.06]">
+            <h2 class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">Author</h2>
+            <div class="space-y-4">
+              <label class="block space-y-2">
+                <span class="text-[12px] text-zinc-400">Profile name</span>
+                <input id="name-input" type="text" value="Lirrey" placeholder="Lirrey"
+                  class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              </label>
+              <label id="headline-field" class="block space-y-2">
+                <span class="text-[12px] text-zinc-400">Headline / bio</span>
+                <input id="headline-input" type="text" value="Building micro-SaaS in public 🚀" placeholder="Building micro-SaaS in public 🚀"
+                  class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              </label>
+              <label id="handle-field" class="hidden space-y-2">
+                <span class="text-[12px] text-zinc-400">Handle</span>
+                <input id="handle-input" type="text" value="lirrey" placeholder="lirrey"
+                  class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              </label>
+              <label class="flex items-center justify-between gap-3 rounded-xl bg-ink-950 px-3.5 h-11 ring-1 ring-white/10">
                 <span class="text-sm text-zinc-300">Verified badge</span>
                 <input id="verified-input" type="checkbox" checked class="h-4 w-4 accent-sky-400" />
               </label>
-              <div>
-                <span class="text-xs text-zinc-400">Avatar</span>
-                <div id="avatar-drop" class="dropzone mt-1.5 flex items-center gap-3 rounded-xl border border-dashed border-white/15 bg-ink-950 p-2.5 cursor-pointer">
-                  <img id="avatar-thumb" alt="" class="h-11 w-11 rounded-full object-cover bg-zinc-800 hidden" />
-                  <div id="avatar-placeholder" class="h-11 w-11 rounded-full bg-zinc-800 grid place-items-center text-xs font-semibold text-zinc-300">L</div>
+              <div class="space-y-2">
+                <span class="text-[12px] text-zinc-400">Avatar</span>
+                <div id="avatar-drop" class="dropzone flex items-center gap-3.5 rounded-xl border border-dashed border-white/15 bg-ink-950 p-3.5 cursor-pointer">
+                  <img id="avatar-thumb" alt="" class="h-12 w-12 rounded-full object-cover bg-zinc-800 hidden" />
+                  <div id="avatar-placeholder" class="h-12 w-12 rounded-full bg-zinc-800 grid place-items-center text-xs font-semibold text-zinc-300">L</div>
                   <div class="min-w-0 flex-1">
-                    <p class="text-sm text-zinc-200 truncate">Upload a photo</p>
-                    <p class="text-[11px] text-zinc-500">PNG or JPG · drag & drop</p>
+                    <p class="text-sm text-zinc-200">Upload a photo</p>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">PNG or JPG · drag & drop</p>
                   </div>
                   <button type="button" id="avatar-clear" class="hidden text-xs text-zinc-400 hover:text-zinc-200">Remove</button>
                   <button type="button" id="avatar-pick" class="text-xs font-medium text-sky-300 hover:text-sky-200">Browse</button>
@@ -166,38 +210,44 @@
             </div>
           </section>
 
-          <section class="space-y-3 pt-4 border-t border-white/5">
-            <div class="flex items-center justify-between">
-              <h2 class="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Content &amp; Media</h2>
-              <span id="char-count" class="text-[11px] tabular-nums text-zinc-500">0</span>
+          <section class="space-y-4 pt-8 border-t border-white/[0.06]">
+            <div class="flex items-center justify-between gap-3">
+              <h2 class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">Content</h2>
+              <div id="char-meter" class="flex items-center gap-2 text-[11px] tabular-nums text-zinc-500">
+                <svg id="limit-ring" class="limit-ring hidden h-5 w-5" viewBox="0 0 20 20" aria-hidden="true">
+                  <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="2" />
+                  <circle id="limit-arc" cx="10" cy="10" r="7" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-dasharray="44" stroke-dashoffset="44" />
+                </svg>
+                <span id="char-count">0</span>
+              </div>
             </div>
-            <label class="block space-y-1.5">
-              <span class="text-xs text-zinc-400">Post text</span>
-              <textarea id="text-input" rows="4" placeholder="Write the post you want to mock up…"
-                class="field w-full resize-y rounded-xl bg-ink-950 px-3.5 py-3 text-sm leading-relaxed ring-1 ring-white/10 outline-none placeholder:text-zinc-600">Just shipped something I've been quietly building.
+            <label class="block space-y-2">
+              <span id="text-label" class="text-[12px] text-zinc-400">Post text</span>
+              <textarea id="text-input" rows="6" placeholder="Write the post you want to mock up…"
+                class="field w-full resize-none rounded-xl bg-ink-950 px-3.5 py-3.5 text-sm leading-relaxed ring-1 ring-white/10 outline-none placeholder:text-zinc-600">Just shipped something I've been quietly building.
 
 A small tool that turns any idea into a polished social post — instantly.
 
 Would love your feedback. #buildinpublic</textarea>
             </label>
-            <div>
-              <span class="text-xs text-zinc-400">Attached screenshot / image</span>
-              <div id="image-drop" class="dropzone mt-1.5 rounded-xl border border-dashed border-white/15 bg-ink-950 p-3 cursor-pointer">
-                <div id="image-empty" class="flex items-center gap-3">
+            <div class="space-y-2">
+              <span class="text-[12px] text-zinc-400">Attached screenshot / image</span>
+              <div id="image-drop" class="dropzone rounded-xl border border-dashed border-white/15 bg-ink-950 p-3.5 cursor-pointer">
+                <div id="image-empty" class="flex items-center gap-3.5">
                   <div class="h-12 w-12 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-4.5-4.5L9 18"/></svg>
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="text-sm text-zinc-200">Drop a screenshot into the post</p>
-                    <p class="text-[11px] text-zinc-500">PNG or JPG · drag, browse, or paste</p>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">PNG or JPG · drag, browse, or paste</p>
                   </div>
                   <button type="button" id="image-pick" class="text-xs font-medium text-sky-300 hover:text-sky-200">Browse</button>
                 </div>
-                <div id="image-filled" class="hidden items-center gap-3">
+                <div id="image-filled" class="hidden items-center gap-3.5">
                   <img id="image-thumb" alt="" class="h-14 w-20 rounded-lg object-cover bg-zinc-800" />
                   <div class="min-w-0 flex-1">
                     <p class="text-sm text-zinc-200 truncate">Screenshot attached</p>
-                    <p class="text-[11px] text-zinc-500">Embedded in the live preview</p>
+                    <p class="text-[11px] text-zinc-500 mt-0.5">Embedded in the live preview</p>
                   </div>
                   <button type="button" id="image-clear" class="text-xs text-zinc-400 hover:text-zinc-200">Remove</button>
                 </div>
@@ -206,37 +256,35 @@ Would love your feedback. #buildinpublic</textarea>
             </div>
           </section>
         </form>
-        <div class="shrink-0 p-5 sm:p-6 pt-3 border-t border-white/5 bg-ink-900 space-y-3">
+        <div class="shrink-0 px-6 sm:px-7 py-5 border-t border-white/[0.06] bg-ink-900 space-y-3.5">
           <label class="flex items-center justify-between gap-3">
             <span class="text-[12px] text-zinc-500">Watermark on export</span>
             <input id="watermark-input" type="checkbox" checked class="toggle" aria-label="Show Made with SocialPostMockup watermark" />
           </label>
           <button type="button" id="download-btn"
-            class="w-full min-h-[52px] rounded-xl bg-white text-ink-950 text-[15px] font-semibold tracking-tight shadow-glow hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none">
-            ⚡ Export Pixel-Perfect PNG
+            class="w-full min-h-[48px] rounded-xl bg-white text-ink-950 text-[14px] font-semibold tracking-tight shadow-glow hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none">
+            Export Pixel-Perfect PNG
           </button>
         </div>
       </aside>
 
-      <section id="preview-stage" class="preview-wash app-grid relative min-h-[640px] lg:min-h-0 lg:h-full overflow-auto grid place-items-center p-5 sm:p-10" data-platform="linkedin">
-        <div id="preview-mount" class="w-full max-w-[560px]"></div>
+      <section id="preview-stage" class="preview-stage relative min-h-0 overflow-hidden grid place-items-center px-6 py-8 sm:px-12" data-platform="linkedin">
+        <div class="preview-vignette absolute inset-0"></div>
+        <div id="preview-mount" class="relative w-full max-w-[540px]"></div>
       </section>
     </main>
   </div>
 
   <script>
-    const DEFAULTS = {
-      linkedin: { handle: 'Building micro-SaaS in public 🚀', label: 'Headline', placeholder: 'Building micro-SaaS in public 🚀' },
-      x: { handle: 'lirrey', label: 'Handle', placeholder: 'lirrey' },
-      instagram: { handle: 'lirrey', label: 'Handle', placeholder: 'lirrey' }
-    };
-
-    const EXPORT_LABEL = '⚡ Export Pixel-Perfect PNG';
+    const LIMITS = { linkedin: 3000, x: 280, instagram: 2200 };
+    const LINKEDIN_PREVIEW_CHARS = 210;
+    const EXPORT_LABEL = 'Export Pixel-Perfect PNG';
 
     const state = {
       platform: 'linkedin',
       name: 'Lirrey',
-      handle: DEFAULTS.linkedin.handle,
+      headline: 'Building micro-SaaS in public 🚀',
+      handle: 'lirrey',
       verified: true,
       watermark: true,
       avatar: null,
@@ -246,11 +294,16 @@ Would love your feedback. #buildinpublic</textarea>
 
     const els = {
       name: document.getElementById('name-input'),
+      headline: document.getElementById('headline-input'),
+      headlineField: document.getElementById('headline-field'),
       handle: document.getElementById('handle-input'),
-      handleLabel: document.getElementById('handle-label'),
+      handleField: document.getElementById('handle-field'),
       verified: document.getElementById('verified-input'),
       text: document.getElementById('text-input'),
+      textLabel: document.getElementById('text-label'),
       charCount: document.getElementById('char-count'),
+      limitRing: document.getElementById('limit-ring'),
+      limitArc: document.getElementById('limit-arc'),
       mount: document.getElementById('preview-mount'),
       stage: document.getElementById('preview-stage'),
       download: document.getElementById('download-btn'),
@@ -284,9 +337,22 @@ Would love your feedback. #buildinpublic</textarea>
     }
 
     function defaultAvatarUrl(name) {
-      const label = initials(name);
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#818cf8"/></linearGradient></defs><rect width="80" height="80" fill="url(#g)"/><text x="50%" y="54%" text-anchor="middle" font-family="Inter,Arial" font-size="28" font-weight="700" fill="white">${label}</text></svg>`;
-      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+      const size = 128;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#38bdf8');
+      gradient.addColorStop(1, '#818cf8');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 46px Inter, Arial, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(initials(name), size / 2, size / 2 + 1);
+      return canvas.toDataURL('image/png');
     }
 
     function avatarSrc() {
@@ -302,13 +368,10 @@ Would love your feedback. #buildinpublic</textarea>
         .replace(/\n/g, '<br>');
     }
 
-    function handleValue() {
-      if (state.platform === 'linkedin') return state.handle;
-      const raw = state.handle.trim();
-      if (!raw || raw === DEFAULTS.linkedin.handle || /\s/.test(raw)) {
-        return state.name.toLowerCase().replace(/[^a-z0-9]+/g, '') || 'johndoe';
-      }
-      return raw.replace(/^@/, '');
+    function displayHandle() {
+      const raw = state.handle.trim().replace(/^@/, '');
+      if (raw) return raw;
+      return state.name.toLowerCase().replace(/[^a-z0-9]+/g, '') || 'lirrey';
     }
 
     function verifiedBadge(platform) {
@@ -336,29 +399,36 @@ Would love your feedback. #buildinpublic</textarea>
       return `<div class="card-watermark" style="color:${color}">Made with SocialPostMockup</div>`;
     }
 
+    function linkedInBody() {
+      if (state.text.length <= LINKEDIN_PREVIEW_CHARS) return formatText(state.text, 'linkedin');
+      return `${formatText(state.text.slice(0, LINKEDIN_PREVIEW_CHARS), 'linkedin')}<span style="color:#00000099">… </span><span style="color:#0A66C2;font-weight:600">more</span>`;
+    }
+
     function renderLinkedIn() {
       const image = state.image
-        ? `<div class="px-4 pt-1 pb-2"><img src="${state.image}" alt="" class="w-full max-h-[420px] rounded-lg object-cover ring-1 ring-black/10" /></div>`
+        ? `<div class="px-4 pt-1 pb-2"><img src="${state.image}" alt="" class="w-full max-h-[420px] rounded-lg object-cover" style="border:1px solid #0000001a" /></div>`
         : '';
       return `
-        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#000000e6] shadow-card ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif">
+        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#1a1a1a] shadow-card ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#ffffff">
           <div class="px-4 pt-3.5 pb-2">
             <div class="flex items-start gap-2.5">
               <img src="${avatarSrc()}" alt="" class="h-12 w-12 rounded-full object-cover" />
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1">
-                  <span class="truncate text-[14px] font-semibold leading-5">${escapeHtml(state.name)}</span>
+                  <span class="text-[14px] font-semibold leading-6">${escapeHtml(state.name)}</span>
                   ${verifiedBadge('linkedin')}
+                  <span class="text-[12px] font-semibold text-[#0A66C2]">· Follow</span>
                 </div>
-                <p class="truncate text-[12px] leading-4 text-black/60">${escapeHtml(state.handle)}</p>
-                <p class="flex items-center gap-1 text-[12px] text-black/55">2h · <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.3A6.7 6.7 0 1 0 8 14.7 6.7 6.7 0 0 0 8 1.3Zm-.1 1.5C6.4 3 5.1 4.6 4.7 6.7h3.2V2.8ZM8.7 2.8v3.9h3.2c-.4-2.1-1.7-3.7-3.2-3.9ZM3.8 8c0-.4 0-.9.1-1.3h-2A5.3 5.3 0 0 0 3.3 11h2.2A13 13 0 0 1 3.8 8Zm1 4.7h3.1v3.8c-1.8-.3-3.3-2.2-3.7-4.5.2.3.4.5.6.7Zm4 3.8V12.7h3.1c-.4 2.3-1.9 4.2-3.7 4.5.2-.2.4-.4.6-.7ZM10.5 11H13a5.3 5.3 0 0 0 1.4-4.3h-2c.1.4.1.9.1 1.3a13 13 0 0 1-2 3ZM4.7 9.3c.3 1.4.8 2.6 1.4 3.4h3.8c.6-.8 1.1-2 1.4-3.4H4.7Z"/></svg></p>
+                <p class="text-[12px] leading-5 text-[#00000099]">${escapeHtml(state.headline)}</p>
+                <p class="text-[12px] leading-5 text-[#0000008c]">1,248 followers</p>
+                <p class="flex items-center gap-1 text-[12px] leading-5 text-[#0000008c]">2h · <svg width="12" height="12" viewBox="0 0 16 16" fill="#0000008c"><path d="M8 1.3A6.7 6.7 0 1 0 8 14.7 6.7 6.7 0 0 0 8 1.3Zm-.1 1.5C6.4 3 5.1 4.6 4.7 6.7h3.2V2.8ZM8.7 2.8v3.9h3.2c-.4-2.1-1.7-3.7-3.2-3.9ZM3.8 8c0-.4 0-.9.1-1.3h-2A5.3 5.3 0 0 0 3.3 11h2.2A13 13 0 0 1 3.8 8Zm1 4.7h3.1v3.8c-1.8-.3-3.3-2.2-3.7-4.5.2.3.4.5.6.7Zm4 3.8V12.7h3.1c-.4 2.3-1.9 4.2-3.7 4.5.2-.2.4-.4.6-.7ZM10.5 11H13a5.3 5.3 0 0 0 1.4-4.3h-2c.1.4.1.9.1 1.3a13 13 0 0 1-2 3ZM4.7 9.3c.3 1.4.8 2.6 1.4 3.4h3.8c.6-.8 1.1-2 1.4-3.4H4.7Z"/></svg></p>
               </div>
               ${moreIcon('#666')}
             </div>
-            <p class="mt-2 text-[14px] leading-[1.4]">${formatText(state.text, 'linkedin')}</p>
+            <p class="mt-2 text-[14px] leading-[1.4]">${linkedInBody()}</p>
           </div>
           ${image}
-          <div class="px-4 py-2 flex items-center justify-between text-[12px] text-black/55">
+          <div class="px-4 py-2 flex items-center justify-between text-[12px] text-[#0000008c]">
             <span class="flex items-center gap-1.5">
               <span class="flex -space-x-1">
                 <span class="h-4 w-4 rounded-full bg-[#0A66C2] ring-2 ring-white"></span>
@@ -368,8 +438,8 @@ Would love your feedback. #buildinpublic</textarea>
             </span>
             <span>8 comments · 3 reposts</span>
           </div>
-          <div class="mx-4 border-t border-black/10"></div>
-          <div class="grid grid-cols-4 px-1 py-1.5 text-[13px] font-semibold text-black/60">
+          <div class="mx-4 border-t border-[#0000001a]"></div>
+          <div class="grid grid-cols-4 px-1 py-1.5 text-[13px] font-semibold text-[#00000099]">
             <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M7 11v9H4v-9h3zm3 9h7.2a2 2 0 0 0 1.94-1.51l1.36-5.5A1.5 1.5 0 0 0 19 11h-6l1-5.2A1.6 1.6 0 0 0 12.4 4 1.4 1.4 0 0 0 11 5.2V11H10v9z"/>')} Like</span>
             <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>')} Comment</span>
             <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M7 7h8l-2-2M17 17H9l2 2"/><path d="M17 7v3a4 4 0 0 1-4 4H7M7 17v-3a4 4 0 0 1 4-4h6"/>')} Repost</span>
@@ -380,33 +450,33 @@ Would love your feedback. #buildinpublic</textarea>
     }
 
     function renderX() {
-      const handle = handleValue();
+      const handle = displayHandle();
       const image = state.image
-        ? `<img src="${state.image}" alt="" class="mt-3 w-full max-h-[420px] rounded-2xl object-cover ring-1 ring-[#2f3336]" />`
+        ? `<img src="${state.image}" alt="" class="mt-3 w-full max-h-[380px] rounded-2xl object-cover" style="border:1px solid #2f3336" />`
         : '';
-      const meta = (icon, count) =>
-        `<span class="flex items-center gap-1.5">${icon}<span>${count}</span></span>`;
+      const meta = (icon, count, label) =>
+        `<span class="flex items-center gap-1.5" title="${label}">${icon}<span>${count}</span></span>`;
       return `
-        <article id="preview-card" class="overflow-hidden rounded-2xl bg-black text-[#e7e9ea] shadow-card ring-1 ring-[#2f3336] ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif">
-          <div class="p-4">
+        <article id="preview-card" class="overflow-hidden rounded-2xl bg-black text-[#e7e9ea] shadow-card max-w-[510px] mx-auto ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#000000;border:1px solid #2f3336">
+          <div class="px-4 py-3">
             <div class="flex gap-3">
               <img src="${avatarSrc()}" alt="" class="h-10 w-10 rounded-full object-cover" />
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-3">
-                  <div class="min-w-0 flex items-center gap-1">
-                    <span class="truncate text-[15px] font-bold leading-5">${escapeHtml(state.name)}</span>
+                  <div class="min-w-0 flex flex-wrap items-center gap-x-1">
+                    <span class="text-[15px] font-bold leading-6">${escapeHtml(state.name)}</span>
                     ${verifiedBadge('x')}
-                    <span class="truncate text-[15px] text-[#71767b]">@${escapeHtml(handle)} · 2h</span>
+                    <span class="text-[15px] leading-6 text-[#71767b]">@${escapeHtml(handle)} · 2h</span>
                   </div>
                   ${moreIcon('#71767b')}
                 </div>
                 <p class="mt-1 text-[15px] leading-[1.35]">${formatText(state.text, 'x')}</p>
                 ${image}
-                <div class="mt-3 flex items-center justify-between text-[#71767b] text-[13px] max-w-md">
-                  ${meta(actionIcon('<path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>', '#71767b'), '12')}
-                  ${meta(actionIcon('<path d="M7 7h8l-2-2M17 17H9l2 2"/><path d="M17 7v3a4 4 0 0 1-4 4H7M7 17v-3a4 4 0 0 1 4-4h6"/>', '#71767b'), '4')}
-                  ${meta(actionIcon('<path d="M12 20s-7-4.4-9.2-8.2C1 8.8 3 6 6.2 6c1.8 0 3.1 1 3.8 2 0.7-1 2-2 3.8-2C17 6 19 8.8 17.2 11.8 15 15.6 12 20 12 20z"/>', '#71767b'), '89')}
-                  ${meta(actionIcon('<path d="M4 19V9M10 19V5M16 19v-7M22 19V8"/>', '#71767b'), '2.1K')}
+                <div class="mt-3 flex items-center justify-between text-[#71767b] text-[13px]">
+                  ${meta(actionIcon('<path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>', '#71767b'), '12', 'Replies')}
+                  ${meta(actionIcon('<path d="M7 7h8l-2-2M17 17H9l2 2"/><path d="M17 7v3a4 4 0 0 1-4 4H7M7 17v-3a4 4 0 0 1 4-4h6"/>', '#71767b'), '4', 'Retweets')}
+                  ${meta(actionIcon('<path d="M12 20s-7-4.4-9.2-8.2C1 8.8 3 6 6.2 6c1.8 0 3.1 1 3.8 2 0.7-1 2-2 3.8-2C17 6 19 8.8 17.2 11.8 15 15.6 12 20 12 20z"/>', '#71767b'), '89', 'Likes')}
+                  ${meta(actionIcon('<path d="M4 19V9M10 19V5M16 19v-7M22 19V8"/>', '#71767b'), '2.1K', 'Views')}
                   ${actionIcon('<path d="M12 5v10M7 9l5-5 5 5M5 19h14"/>', '#71767b')}
                 </div>
               </div>
@@ -417,21 +487,21 @@ Would love your feedback. #buildinpublic</textarea>
     }
 
     function renderInstagram() {
-      const handle = handleValue();
-      const image = state.image
-        ? `<img src="${state.image}" alt="" class="w-full max-h-[540px] object-cover" />`
-        : '';
+      const handle = displayHandle();
+      const media = state.image
+        ? `<img src="${state.image}" alt="" class="w-full aspect-[4/5] max-h-[520px] object-cover" />`
+        : `<div class="aspect-[4/5] w-full bg-[#fafafa] grid place-items-center text-[#8e8e8e] text-[13px]">Add a photo to complete the post</div>`;
       return `
-        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#262626] shadow-card ring-1 ring-black/10 ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif">
+        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#262626] shadow-card max-w-[470px] mx-auto ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#ffffff;border:1px solid #00000014">
           <div class="flex items-center gap-2.5 px-3 py-2.5">
             <div class="ig-ring"><img src="${avatarSrc()}" alt="" class="h-8 w-8 rounded-full object-cover bg-white" /></div>
             <div class="min-w-0 flex-1 flex items-center gap-1">
-              <span class="truncate text-[13px] font-semibold">${escapeHtml(handle)}</span>
+              <span class="text-[13px] font-semibold leading-6">${escapeHtml(handle)}</span>
               ${verifiedBadge('instagram')}
             </div>
             ${moreIcon('#262626')}
           </div>
-          ${image || `<div class="px-3 pb-2 text-[14px] leading-[1.4]">${formatText(state.text, 'instagram')}</div>`}
+          ${media}
           <div class="px-3 pt-2.5 pb-3">
             <div class="flex items-center gap-4 text-[#262626]">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.2-8.2C1 8.8 3 6 6.2 6c1.8 0 3.1 1 3.8 2 0.7-1 2-2 3.8-2C17 6 19 8.8 17.2 11.8 15 15.6 12 20 12 20z"/></svg>
@@ -440,7 +510,7 @@ Would love your feedback. #buildinpublic</textarea>
               <span class="ml-auto"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12a1 1 0 0 1 1 1v16l-7-4-7 4V5a1 1 0 0 1 1-1z"/></svg></span>
             </div>
             <p class="mt-2 text-[14px] font-semibold">128 likes</p>
-            ${state.image ? `<p class="mt-1 text-[14px] leading-[1.4]"><span class="font-semibold mr-1">${escapeHtml(handle)}</span>${formatText(state.text, 'instagram')}</p>` : ''}
+            <p class="mt-1 text-[14px] leading-[1.4]"><span class="font-semibold mr-1">${escapeHtml(handle)}</span>${formatText(state.text, 'instagram')}</p>
             <p class="mt-1.5 text-[10px] uppercase tracking-wide text-[#8e8e8e]">2 hours ago</p>
           </div>
           ${watermarkMarkup('light')}
@@ -463,17 +533,34 @@ Would love your feedback. #buildinpublic</textarea>
       });
     }
 
-    function updateCharCount() {
-      const length = state.text.length;
-      const limit = state.platform === 'x' ? 280 : state.platform === 'instagram' ? 2200 : 3000;
-      els.charCount.textContent = `${length} / ${limit}`;
-      els.charCount.className = `text-[11px] tabular-nums ${length > limit ? 'text-rose-400' : 'text-zinc-500'}`;
+    function updatePlatformFields() {
+      const isLinkedIn = state.platform === 'linkedin';
+      const isX = state.platform === 'x';
+      els.headlineField.classList.toggle('hidden', !isLinkedIn);
+      els.headlineField.classList.toggle('block', isLinkedIn);
+      els.handleField.classList.toggle('hidden', isLinkedIn);
+      els.handleField.classList.toggle('block', !isLinkedIn);
+      els.textLabel.textContent = isX ? 'Tweet text' : isLinkedIn ? 'Post text' : 'Caption';
+      els.text.rows = isX ? 5 : 6;
+      els.text.maxLength = LIMITS[state.platform];
+      els.mount.className = `relative w-full ${isX ? 'max-w-[510px]' : state.platform === 'instagram' ? 'max-w-[470px]' : 'max-w-[540px]'}`;
     }
 
-    function updateHandleField() {
-      const meta = DEFAULTS[state.platform];
-      els.handleLabel.textContent = meta.label;
-      els.handle.placeholder = meta.placeholder;
+    function updateCharCount() {
+      const limit = LIMITS[state.platform];
+      const length = state.text.length;
+      const remaining = limit - length;
+      const isX = state.platform === 'x';
+      els.limitRing.classList.toggle('hidden', !isX);
+      if (isX) {
+        const progress = Math.min(length / limit, 1);
+        els.limitArc.setAttribute('stroke-dashoffset', String(44 - 44 * progress));
+        els.limitArc.setAttribute('stroke', remaining <= 20 ? '#f43f5e' : remaining <= 40 ? '#f59e0b' : '#38bdf8');
+        els.charCount.textContent = remaining <= 40 ? String(remaining) : `${length} / ${limit}`;
+      } else {
+        els.charCount.textContent = `${length} / ${limit}`;
+      }
+      els.charCount.className = `text-[11px] tabular-nums ${remaining < 0 || (isX && remaining <= 20) ? 'text-rose-400' : 'text-zinc-500'}`;
     }
 
     function syncAvatarUi() {
@@ -527,15 +614,13 @@ Would love your feedback. #buildinpublic</textarea>
 
     document.querySelectorAll('.platform-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const next = btn.dataset.platform;
-        const currentDefault = Object.values(DEFAULTS).some((item) => item.handle === state.handle);
-        if (currentDefault) {
-          state.handle = DEFAULTS[next].handle;
-          els.handle.value = state.handle;
+        state.platform = btn.dataset.platform;
+        if (state.text.length > LIMITS[state.platform]) {
+          state.text = state.text.slice(0, LIMITS[state.platform]);
+          els.text.value = state.text;
         }
-        state.platform = next;
         updatePlatformButtons();
-        updateHandleField();
+        updatePlatformFields();
         updateCharCount();
         renderPreview();
       });
@@ -544,6 +629,10 @@ Would love your feedback. #buildinpublic</textarea>
     els.name.addEventListener('input', () => {
       state.name = els.name.value;
       syncAvatarUi();
+      renderPreview();
+    });
+    els.headline.addEventListener('input', () => {
+      state.headline = els.headline.value;
       renderPreview();
     });
     els.handle.addEventListener('input', () => {
@@ -606,22 +695,38 @@ Would love your feedback. #buildinpublic</textarea>
       });
     });
 
+    function waitForImages(root) {
+      return Promise.all([...root.querySelectorAll('img')].map((img) => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = img.onerror = () => resolve();
+        });
+      }));
+    }
+
     els.download.addEventListener('click', async () => {
       const card = document.getElementById('preview-card');
-      if (!card) return;
+      if (!card || !window.htmlToImage) return;
       els.download.disabled = true;
       els.download.textContent = 'Exporting…';
       try {
-        const canvas = await html2canvas(card, {
-          scale: 3,
-          useCORS: true,
-          backgroundColor: null,
-          logging: false
+        if (document.fonts?.ready) await document.fonts.ready;
+        await waitForImages(card);
+        const backgroundColor = state.platform === 'x' ? '#000000' : '#ffffff';
+        const dataUrl = await htmlToImage.toPng(card, {
+          pixelRatio: 3,
+          cacheBust: true,
+          backgroundColor,
+          skipFonts: false
         });
         const link = document.createElement('a');
         link.download = `socialpost-${state.platform}.png`;
-        link.href = canvas.toDataURL('image/png');
+        link.href = dataUrl;
         link.click();
+      } catch (error) {
+        console.error(error);
+        els.download.textContent = 'Export failed — try again';
+        await new Promise((resolve) => setTimeout(resolve, 1600));
       } finally {
         els.download.disabled = false;
         els.download.textContent = EXPORT_LABEL;
@@ -629,16 +734,10 @@ Would love your feedback. #buildinpublic</textarea>
     });
 
     const requested = new URLSearchParams(location.search).get('platform');
-    if (requested && DEFAULTS[requested]) {
-      state.platform = requested;
-      if (Object.values(DEFAULTS).some((item) => item.handle === state.handle)) {
-        state.handle = DEFAULTS[requested].handle;
-        els.handle.value = state.handle;
-      }
-    }
+    if (requested && LIMITS[requested]) state.platform = requested;
 
     updatePlatformButtons();
-    updateHandleField();
+    updatePlatformFields();
     updateCharCount();
     syncAvatarUi();
     syncImageUi();
