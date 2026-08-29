@@ -393,6 +393,17 @@ Would love your feedback. #buildinpublic</textarea>
       return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
     }
 
+    function linkedInIcon(paths, filled = false) {
+      if (filled) {
+        return `<svg width="22" height="22" viewBox="0 0 24 24" fill="#00000099">${paths}</svg>`;
+      }
+      return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00000099" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+    }
+
+    function linkedInAction(icon, label) {
+      return `<span class="h-12 flex flex-col items-center justify-center gap-0.5">${icon}<span>${label}</span></span>`;
+    }
+
     function watermarkMarkup(tone) {
       if (!state.watermark) return '';
       const color = tone === 'dark' ? 'rgba(231,233,234,.38)' : 'rgba(0,0,0,.32)';
@@ -439,11 +450,11 @@ Would love your feedback. #buildinpublic</textarea>
             <span>8 comments · 3 reposts</span>
           </div>
           <div class="mx-4 border-t border-[#0000001a]"></div>
-          <div class="grid grid-cols-4 px-1 py-1.5 text-[13px] font-semibold text-[#00000099]">
-            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M7 11v9H4v-9h3zm3 9h7.2a2 2 0 0 0 1.94-1.51l1.36-5.5A1.5 1.5 0 0 0 19 11h-6l1-5.2A1.6 1.6 0 0 0 12.4 4 1.4 1.4 0 0 0 11 5.2V11H10v9z"/>')} Like</span>
-            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M21 12a8 8 0 0 1-11.3 7.3L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>')} Comment</span>
-            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M7 7h8l-2-2M17 17H9l2 2"/><path d="M17 7v3a4 4 0 0 1-4 4H7M7 17v-3a4 4 0 0 1 4-4h6"/>')} Repost</span>
-            <span class="h-10 flex items-center justify-center gap-1.5">${actionIcon('<path d="M22 3 11 13"/><path d="M22 3 15 21l-4-8-8-4 19-6z"/>')} Send</span>
+          <div class="grid grid-cols-4 px-1 py-1.5 text-[12px] font-semibold text-[#00000099]">
+            ${linkedInAction(linkedInIcon('<path d="M7 10.8v10.2H4.6A1.6 1.6 0 0 1 3 19.4v-7A1.6 1.6 0 0 1 4.6 10.8H7z"/><path d="M7 10.8 9.4 4.2A2.3 2.3 0 0 1 11.6 2.8c.9.3 1.3 1.3 1 2.2L12 8.2h6.8a2.1 2.1 0 0 1 2.1 2.5l-1.2 6.6a2.3 2.3 0 0 1-2.3 1.9H7"/>'), 'Like')}
+            ${linkedInAction(linkedInIcon('<path d="M20 6.8A2.3 2.3 0 0 0 17.7 4.5H6.3A2.3 2.3 0 0 0 4 6.8v6.7A2.3 2.3 0 0 0 6.3 15.8H8.2V19l3.8-3.2h5.7A2.3 2.3 0 0 0 20 13.5V6.8z"/><path d="M8.2 8.4h7.6M8.2 11.2h7.6M8.2 14h5"/>'), 'Comment')}
+            ${linkedInAction(linkedInIcon('<path d="M4.8 9.2V6.8A1.6 1.6 0 0 1 6.4 5.2h10.6"/><path d="M14.6 3.2 17.8 5.2 14.6 7.2"/><path d="M19.2 14.8v2.4A1.6 1.6 0 0 1 17.6 18.8H7"/><path d="M9.4 20.8 6.2 18.8 9.4 16.8"/>'), 'Repost')}
+            ${linkedInAction(linkedInIcon('<path d="M21.6 2.9 2.9 10.2c-.7.3-.6 1.3.1 1.5l8.1 2.2 2.2 8.1c.2.7 1.2.8 1.5.1l7.3-18.7c.3-.7-.4-1.4-1.1-1.1z"/>', true), 'Send')}
           </div>
           ${watermarkMarkup('light')}
         </article>`;
