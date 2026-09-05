@@ -210,12 +210,36 @@
       white-space: nowrap;
     }
     .limit-ring { transform: rotate(-90deg); }
+    #preview-sizer {
+      position: relative;
+      flex: 0 0 auto;
+    }
+    #preview-mount {
+      transform-origin: top left;
+    }
+    @media (min-width: 1024px) {
+      #preview-frame.preview-split {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        column-gap: 2rem;
+      }
+      #preview-frame.preview-split #preview-kicker {
+        width: 100%;
+        text-align: center;
+      }
+      #preview-frame.preview-split #cta-dock {
+        margin-top: 0;
+        max-width: 20rem;
+      }
+    }
     #preview-mount #preview-card {
       width: 100%;
       box-shadow:
-        0 0 0 1px rgba(255,255,255,.06),
-        0 40px 90px -28px rgba(0,0,0,.78),
-        0 18px 40px -20px rgba(0,0,0,.55);
+        0 0 0 1px rgba(255,255,255,.08),
+        0 48px 110px -24px rgba(0,0,0,.82),
+        0 22px 48px -18px rgba(0,0,0,.6);
     }
     .export-cta {
       box-shadow:
@@ -228,12 +252,6 @@
         0 0 0 1px rgba(255,255,255,.16),
         0 22px 56px -12px rgba(255,255,255,.48),
         0 28px 70px -30px rgba(0,0,0,.75);
-    }
-    .cta-dock {
-      background: linear-gradient(to top, rgba(5,5,7,.92) 55%, rgba(5,5,7,0));
-    }
-    @media (min-width: 1024px) {
-      .cta-dock { background: transparent; }
     }
   </style>
 </head>
@@ -258,7 +276,7 @@
       </div>
     </header>
 
-    <main class="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-[minmax(300px,380px)_minmax(0,1fr)]">
+    <main class="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-[300px_minmax(0,1fr)]">
       <aside class="order-2 lg:order-1 border-t lg:border-t-0 lg:border-r border-white/[0.06] bg-ink-900 min-h-0 flex flex-col">
         <form id="controls" class="sidebar-scroll px-5 sm:px-6 py-6 space-y-8 overflow-y-auto overflow-x-hidden flex-1" autocomplete="off">
           <p class="text-[13px] text-zinc-400">Edit anything — the preview updates live. Start with the post text.</p>
@@ -358,14 +376,14 @@ This preview is yours — type over it and download.</textarea>
         </form>
       </aside>
 
-      <section id="preview-stage" class="order-1 lg:order-2 preview-stage relative h-[calc(100svh-3.5rem)] lg:h-auto lg:min-h-0 overflow-hidden lg:overflow-y-auto flex flex-col items-center" style="justify-content: safe center" data-platform="linkedin">
+      <section id="preview-stage" class="order-1 lg:order-2 preview-stage relative h-[calc(100svh-3.5rem)] lg:h-auto lg:min-h-0 overflow-hidden flex" data-platform="linkedin">
         <div class="preview-vignette absolute inset-0"></div>
-        <div class="relative z-10 flex-1 min-h-0 w-full overflow-y-auto lg:flex-none lg:overflow-visible flex flex-col items-center px-5 py-6 sm:px-10 lg:px-14 lg:pt-8">
-          <p class="mb-5 text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Live preview</p>
-          <div id="preview-mount" class="relative w-full max-w-[680px]"></div>
-        </div>
-        <div class="cta-dock relative z-20 shrink-0 w-full flex flex-col items-center px-5 pt-4 pb-5 sm:px-10 lg:px-14 lg:pt-7 lg:pb-8">
-          <div class="w-full max-w-md flex flex-col items-center gap-2.5">
+        <div id="preview-frame" class="relative z-10 flex-1 min-h-0 w-full flex flex-col items-center justify-center px-4 py-5 sm:px-6 lg:px-8">
+          <p id="preview-kicker" class="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Live preview</p>
+          <div id="preview-sizer">
+            <div id="preview-mount"></div>
+          </div>
+          <div id="cta-dock" class="relative z-20 mt-5 w-full flex flex-col items-center gap-2.5">
             <button type="button" id="download-btn"
               class="export-cta w-full min-h-[56px] rounded-2xl bg-white text-ink-950 text-[15px] font-semibold tracking-tight hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none inline-flex items-center justify-center gap-2.5 px-6">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
@@ -434,6 +452,7 @@ This preview is yours — type over it and download.</textarea>
 
   <script>
     const LIMITS = { linkedin: 3000, x: 280, instagram: 2200 };
+    const NATIVE_WIDTH = { linkedin: 560, x: 504, instagram: 400 };
     const LINKEDIN_PREVIEW_CHARS = 210;
     const EXPORT_LABEL = 'Download pixel-perfect PNG';
 
@@ -462,6 +481,10 @@ This preview is yours — type over it and download.</textarea>
       limitRing: document.getElementById('limit-ring'),
       limitArc: document.getElementById('limit-arc'),
       mount: document.getElementById('preview-mount'),
+      sizer: document.getElementById('preview-sizer'),
+      frame: document.getElementById('preview-frame'),
+      kicker: document.getElementById('preview-kicker'),
+      ctaDock: document.getElementById('cta-dock'),
       stage: document.getElementById('preview-stage'),
       download: document.getElementById('download-btn'),
       downloadLabel: document.getElementById('download-label'),
@@ -692,6 +715,53 @@ This preview is yours — type over it and download.</textarea>
       const renderers = { linkedin: renderLinkedIn, x: renderX, instagram: renderInstagram };
       els.mount.innerHTML = renderers[state.platform]();
       els.stage.dataset.platform = state.platform;
+      const card = document.getElementById('preview-card');
+      card?.querySelectorAll('img').forEach((img) => {
+        if (!img.complete) img.addEventListener('load', scheduleFit, { once: true });
+      });
+      scheduleFit();
+    }
+
+    let fitRaf = 0;
+    function scheduleFit() {
+      cancelAnimationFrame(fitRaf);
+      fitRaf = requestAnimationFrame(fitPreview);
+    }
+
+    function fitPreview() {
+      const { frame, sizer, mount, kicker, ctaDock } = els;
+      const card = document.getElementById('preview-card');
+      if (!frame || !sizer || !mount || !card || !ctaDock) return;
+
+      const native = NATIVE_WIDTH[state.platform];
+      mount.style.transform = 'none';
+      mount.style.width = `${native}px`;
+      sizer.style.width = `${native}px`;
+      sizer.style.height = 'auto';
+      ctaDock.style.maxWidth = '';
+      frame.classList.remove('preview-split');
+
+      const cardW = card.offsetWidth || native;
+      const cardH = card.offsetHeight || 1;
+      const tall = cardH / cardW > 1.2;
+      const split = tall && window.matchMedia('(min-width: 1024px)').matches;
+      frame.classList.toggle('preview-split', split);
+
+      const styles = getComputedStyle(frame);
+      const padX = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
+      const padY = (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);
+      const kickerH = (kicker?.offsetHeight || 0) + (parseFloat(getComputedStyle(kicker).marginBottom) || 0);
+      const dockStyles = getComputedStyle(ctaDock);
+      const dockH = split ? 0 : ctaDock.offsetHeight + (parseFloat(dockStyles.marginTop) || 0);
+      const ctaReserve = split ? 320 + 32 : 0;
+      const availW = Math.max(160, frame.clientWidth - padX - ctaReserve);
+      const availH = Math.max(140, frame.clientHeight - padY - kickerH - dockH);
+      const scale = Math.min(Math.max(Math.min(availW / cardW, availH / cardH), 0.72), 4);
+
+      mount.style.transform = `scale(${scale})`;
+      sizer.style.width = `${cardW * scale}px`;
+      sizer.style.height = `${cardH * scale}px`;
+      ctaDock.style.maxWidth = split ? '20rem' : `${cardW * scale}px`;
     }
 
     function updatePlatformButtons() {
@@ -714,7 +784,6 @@ This preview is yours — type over it and download.</textarea>
       els.textLabel.textContent = isX ? 'Tweet text' : isLinkedIn ? 'Post text' : 'Caption';
       els.text.rows = isX ? 5 : 6;
       els.text.maxLength = LIMITS[state.platform];
-      els.mount.className = `relative w-full ${isX ? 'max-w-[600px]' : state.platform === 'instagram' ? 'max-w-[440px]' : 'max-w-[680px]'}`;
     }
 
     function updateCharCount() {
@@ -946,6 +1015,9 @@ This preview is yours — type over it and download.</textarea>
     syncAvatarUi();
     syncImageUi();
     renderPreview();
+
+    if (els.frame) new ResizeObserver(scheduleFit).observe(els.frame);
+    window.addEventListener('resize', scheduleFit);
 
     if (window.matchMedia('(min-width: 1024px)').matches) {
       els.text.focus({ preventScroll: true });
