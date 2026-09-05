@@ -111,6 +111,10 @@
       document.head.appendChild(script);
     }
   </script>
+  <script type="module">
+    import { mountGoogleLogin } from './js/google-login.js';
+    mountGoogleLogin(document.getElementById('google-login'));
+  </script>
   <style>
     :root { color-scheme: light; }
     html, body { height: 100%; }
@@ -218,10 +222,7 @@
             <p class="text-[11px] text-zinc-500 hidden sm:block">Type, preview, download — free PNG, no signup</p>
           </div>
         </div>
-        <p class="hidden sm:flex items-center gap-2 shrink-0 text-[11px] font-medium text-zinc-500">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-          Free · No account
-        </p>
+        <div id="google-login" class="shrink-0"></div>
       </div>
     </header>
 
