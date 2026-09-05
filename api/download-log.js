@@ -23,6 +23,8 @@ export default function handler(req, res) {
     uploadedAvatar: payload.uploadedAvatar,
     attachedScreenshot: payload.attachedScreenshot,
     watermark: payload.watermark,
+    postCount: payload.postCount,
+    freemiumAction: payload.freemiumAction,
     content: payload.content
   });
 

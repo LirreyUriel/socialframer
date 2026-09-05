@@ -70,8 +70,14 @@ export function mountGoogleLogin(root) {
     })
   }
 
-  supabase.auth.getSession().then(({ data }) => render(data.session))
-  supabase.auth.onAuthStateChange((_event, session) => render(session))
+  supabase.auth.getSession().then(({ data }) => {
+    render(data.session)
+    window.dispatchEvent(new CustomEvent('sm-auth-change', { detail: { session: data.session } }))
+  })
+  supabase.auth.onAuthStateChange((_event, session) => {
+    render(session)
+    window.dispatchEvent(new CustomEvent('sm-auth-change', { detail: { session } }))
+  })
 }
 
 function escapeHtml(value) {
