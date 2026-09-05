@@ -114,13 +114,14 @@
   <script type="module">
     import { mountGoogleLogin, signInWithGoogle } from './js/google-login.js';
     import * as freemium from './js/freemium.js';
-    import { openPremiumCheckout } from './js/paddle-checkout.js';
+    import { openPremiumCheckout, preparePaddle } from './js/paddle-checkout.js';
     import * as brandKit from './js/brand-kit.js';
     import * as calendarPosts from './js/calendar-posts.js';
     mountGoogleLogin(document.getElementById('google-login'));
     window.signInWithGoogle = signInWithGoogle;
     window.SocialFreemium = freemium;
     window.openPremiumCheckout = openPremiumCheckout;
+    preparePaddle();
     window.SocialBrandKit = brandKit;
     window.SocialCalendar = calendarPosts;
     window.dispatchEvent(new Event('social-ready'));
@@ -450,6 +451,12 @@ This preview is yours — type over it and download.</textarea>
         Generate LinkedIn post mockups, tweet mockups, and Instagram post frames in the browser at
         <a href="https://socialmockup.online/" class="text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">socialmockup.online</a>.
       </p>
+
+      <nav class="flex flex-wrap gap-x-5 gap-y-2 pt-2 text-[13px]" aria-label="Legal">
+        <a href="/terms.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Terms of Service</a>
+        <a href="/privacy.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Privacy Notice</a>
+        <a href="/refund.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Refund Policy</a>
+      </nav>
     </div>
   </footer>
 
@@ -1143,7 +1150,7 @@ This preview is yours — type over it and download.</textarea>
         if (els.upgradeModalCopy) {
           els.upgradeModalCopy.textContent = error.code === 'not_configured'
             ? 'Add PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID in Vercel env vars to open checkout.'
-            : (error.message || 'Could not open Paddle checkout.');
+            : (error.message || 'Paddle could not open checkout. In Paddle, set Checkout → Checkout settings → Default payment link to https://socialmockup.online and approve this domain.');
         }
         setModalOpen(els.upgradeModal, true);
       }

@@ -13,9 +13,14 @@ export default function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Method Not Allowed' })
   }
 
-  const token = firstEnv('NEXT_PUBLIC_PADDLE_CLIENT_TOKEN', 'PADDLE_CLIENT_TOKEN')
-  const priceId = firstEnv('NEXT_PUBLIC_PADDLE_PRICE_ID', 'PADDLE_PRICE_ID')
-  const environment = firstEnv('NEXT_PUBLIC_PADDLE_ENVIRONMENT', 'PADDLE_ENVIRONMENT') || 'sandbox'
+  const token = firstEnv('NEXT_PUBLIC_PADDLE_CLIENT_TOKEN', 'PADDLE_CLIENT_TOKEN').trim()
+  const priceId = firstEnv('NEXT_PUBLIC_PADDLE_PRICE_ID', 'PADDLE_PRICE_ID').trim()
+  const explicitEnv = firstEnv('NEXT_PUBLIC_PADDLE_ENVIRONMENT', 'PADDLE_ENVIRONMENT').trim().toLowerCase()
+  const environment = explicitEnv === 'production' || explicitEnv === 'sandbox'
+    ? explicitEnv
+    : token.startsWith('test_')
+      ? 'sandbox'
+      : 'production'
 
   if (!token || !priceId) {
     return res.status(503).json({
@@ -30,6 +35,6 @@ export default function handler(req, res) {
     configured: true,
     token,
     priceId,
-    environment: environment === 'production' ? 'production' : 'sandbox'
+    environment
   })
 }

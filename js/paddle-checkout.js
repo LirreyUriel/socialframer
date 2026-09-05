@@ -3,6 +3,8 @@ import { getSessionUser } from './freemium.js'
 
 let paddleClient = null
 let paddleConfig = null
+let checkoutError = null
+let completedHandler = null
 
 export async function loadPaddleConfig() {
   if (paddleConfig) return paddleConfig
@@ -20,22 +22,48 @@ export async function loadPaddleConfig() {
   return paddleConfig
 }
 
-async function getPaddle(onCompleted) {
-  const config = await loadPaddleConfig()
+function paddleMessage(event) {
+  return event?.error?.detail
+    || event?.error?.message
+    || event?.data?.error?.detail
+    || event?.data?.message
+    || event?.detail
+    || ''
+}
+
+async function getPaddle() {
   if (paddleClient) return paddleClient
-  paddleClient = await initializePaddle({
+  const config = await loadPaddleConfig()
+  const options = {
     token: config.token,
-    environment: config.environment === 'production' ? 'production' : 'sandbox',
     eventCallback(event) {
-      if (event?.name === 'checkout.completed') {
-        onCompleted?.(event)
+      const name = event?.name || ''
+      if (name === 'checkout.completed') {
+        completedHandler?.(event)
+        return
+      }
+      if (name === 'checkout.error' || name === 'checkout.warning') {
+        checkoutError = paddleMessage(event) || 'Paddle checkout failed'
+        console.error('Paddle checkout event', event)
       }
     }
-  })
+  }
+  if (config.environment === 'sandbox') {
+    options.environment = 'sandbox'
+  }
+  paddleClient = await initializePaddle(options)
   if (!paddleClient) {
     throw new Error('Could not initialize Paddle')
   }
   return paddleClient
+}
+
+export async function preparePaddle() {
+  try {
+    await getPaddle()
+  } catch (error) {
+    if (error.code !== 'not_configured') console.warn(error)
+  }
 }
 
 export async function openPremiumCheckout({ onCompleted } = {}) {
@@ -47,16 +75,31 @@ export async function openPremiumCheckout({ onCompleted } = {}) {
   }
 
   const config = await loadPaddleConfig()
-  const paddle = await getPaddle(onCompleted)
-  await paddle.Checkout.open({
+  const paddle = await getPaddle()
+  completedHandler = onCompleted
+  checkoutError = null
+
+  const openOptions = {
     items: [{ priceId: config.priceId, quantity: 1 }],
-    customer: user.email ? { email: user.email } : undefined,
     customData: {
-      user_id: user.id
+      user_id: String(user.id)
     },
     settings: {
       displayMode: 'overlay',
-      theme: 'light'
+      theme: 'light',
+      successUrl: window.location.origin
     }
-  })
+  }
+  if (user.email && !/\s/.test(user.email)) {
+    openOptions.customer = { email: user.email }
+  }
+
+  paddle.Checkout.open(openOptions)
+
+  await new Promise((resolve) => setTimeout(resolve, 800))
+  if (checkoutError) {
+    const error = new Error(checkoutError)
+    error.code = 'checkout_error'
+    throw error
+  }
 }
