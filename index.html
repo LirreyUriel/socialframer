@@ -6,7 +6,7 @@
   <title>Free Social Media Post Mockup Generator</title>
   <meta name="description" content="Free social media post mockup generator and X and LinkedIn screenshot framer. Design authentic LinkedIn, X (Twitter), and Instagram post mockups and export a pixel-perfect PNG." />
   <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#050507" />
+  <meta name="theme-color" content="#f8fafc" />
   <link rel="canonical" href="https://socialmockup.online/" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="en_US" />
@@ -83,12 +83,8 @@
       theme: {
         extend: {
           fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
-          colors: {
-            ink: { 950: '#050507', 900: '#0a0a0d', 850: '#101014', 800: '#16161b' }
-          },
           boxShadow: {
-            card: '0 30px 80px -28px rgba(0,0,0,.7)',
-            glow: '0 0 0 1px rgba(255,255,255,.06), 0 18px 40px -24px rgba(0,0,0,.8)'
+            card: '0 24px 60px -28px rgba(15,23,42,.28)'
           }
         }
       }
@@ -116,33 +112,33 @@
     }
   </script>
   <style>
-    :root { color-scheme: dark; }
+    :root { color-scheme: light; }
     html, body { height: 100%; }
-    body { background: #050507; }
+    body { background: #f8fafc; }
     .preview-stage {
-      background-color: #07080c;
+      background-color: #f1f5f9;
       background-image:
-        radial-gradient(circle at 1px 1px, rgba(255,255,255,.055) 1px, transparent 0),
+        radial-gradient(circle at 1px 1px, rgba(15,23,42,.06) 1px, transparent 0),
         radial-gradient(900px 480px at 70% 18%, var(--wash-a), transparent 58%),
         radial-gradient(720px 420px at 18% 92%, var(--wash-b), transparent 55%);
       background-size: 22px 22px, auto, auto;
       transition: background 400ms ease;
     }
     .preview-stage[data-platform="linkedin"] {
-      --wash-a: rgba(10,102,194,.2);
+      --wash-a: rgba(10,102,194,.12);
       --wash-b: rgba(56,189,248,.08);
     }
     .preview-stage[data-platform="x"] {
-      --wash-a: rgba(231,233,234,.07);
-      --wash-b: rgba(29,155,240,.12);
+      --wash-a: rgba(15,23,42,.05);
+      --wash-b: rgba(29,155,240,.08);
     }
     .preview-stage[data-platform="instagram"] {
-      --wash-a: rgba(225,48,108,.16);
-      --wash-b: rgba(245,133,41,.12);
+      --wash-a: rgba(225,48,108,.1);
+      --wash-b: rgba(245,133,41,.08);
     }
     .preview-vignette {
       pointer-events: none;
-      box-shadow: inset 0 0 160px rgba(0,0,0,.45);
+      box-shadow: inset 0 0 120px rgba(15,23,42,.04);
     }
     .ig-ring {
       background: linear-gradient(135deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
@@ -150,9 +146,12 @@
       border-radius: 9999px;
     }
     .dropzone { transition: border-color 160ms ease, background 160ms ease; }
-    .dropzone.dragover { border-color: #93c5fd; background: rgba(147,197,253,.08); }
+    .dropzone.dragover { border-color: #3b82f6; background: rgba(59,130,246,.06); }
     #preview-card { -webkit-font-smoothing: antialiased; position: relative; }
-    .field:focus-within { border-color: #52525b; }
+    .field:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+    }
     input[type="file"] { display: none; }
     .toggle {
       appearance: none;
@@ -193,27 +192,21 @@
     #preview-mount #preview-card {
       width: 100%;
       box-shadow:
-        0 0 0 1px rgba(255,255,255,.08),
-        0 40px 90px -28px rgba(0,0,0,.78),
-        0 18px 40px -20px rgba(0,0,0,.55);
+        0 0 0 1px rgba(15,23,42,.06),
+        0 28px 70px -24px rgba(15,23,42,.28),
+        0 12px 28px -16px rgba(15,23,42,.16);
     }
     .export-cta {
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.1),
-        0 18px 50px -16px rgba(255,255,255,.38),
-        0 28px 70px -30px rgba(0,0,0,.75);
+      box-shadow: 0 14px 36px -12px rgba(37,99,235,.55);
     }
     .export-cta:hover {
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.16),
-        0 22px 56px -12px rgba(255,255,255,.48),
-        0 28px 70px -30px rgba(0,0,0,.75);
+      box-shadow: 0 18px 42px -10px rgba(37,99,235,.62);
     }
   </style>
 </head>
-<body class="min-h-screen font-sans text-zinc-100 antialiased">
+<body class="min-h-screen font-sans text-zinc-900 antialiased">
   <div class="min-h-screen flex flex-col">
-    <header class="shrink-0 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl">
+    <header class="shrink-0 border-b border-zinc-200 bg-white/90 backdrop-blur-xl">
       <div class="mx-auto max-w-3xl px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3 min-w-0">
           <div class="relative h-7 w-7 shrink-0">
@@ -225,82 +218,82 @@
             <p class="text-[11px] text-zinc-500 hidden sm:block">Type, preview, download — free PNG, no signup</p>
           </div>
         </div>
-        <p class="hidden sm:flex items-center gap-2 shrink-0 text-[11px] font-medium text-zinc-400">
-          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+        <p class="hidden sm:flex items-center gap-2 shrink-0 text-[11px] font-medium text-zinc-500">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
           Free · No account
         </p>
       </div>
     </header>
 
     <main class="flex-1 flex flex-col">
-      <form id="controls" class="shrink-0 border-b border-white/[0.06] bg-ink-900" autocomplete="off">
+      <form id="controls" class="shrink-0 border-b border-zinc-200 bg-white" autocomplete="off">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 py-4 space-y-3">
-          <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-black/40 ring-1 ring-white/[0.06]" role="tablist">
+          <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-zinc-100 ring-1 ring-zinc-200" role="tablist">
             <button type="button" data-platform="linkedin" title="LinkedIn" class="platform-btn h-9 rounded-lg text-[13px] font-medium">LinkedIn</button>
             <button type="button" data-platform="x" title="X (Twitter)" class="platform-btn h-9 rounded-lg text-[13px] font-medium">X</button>
             <button type="button" data-platform="instagram" title="Instagram" class="platform-btn h-9 rounded-lg text-[13px] font-medium">Instagram</button>
           </div>
 
           <div class="flex flex-col sm:flex-row gap-2.5">
-            <div id="avatar-drop" class="dropzone flex items-center gap-2.5 rounded-xl border border-dashed border-white/15 bg-ink-950 px-2.5 py-2 cursor-pointer sm:w-[9.5rem] shrink-0">
-              <img id="avatar-thumb" alt="" class="h-9 w-9 rounded-full object-cover bg-zinc-800 hidden" />
-              <div id="avatar-placeholder" class="h-9 w-9 rounded-full bg-zinc-800 grid place-items-center text-[10px] font-semibold text-zinc-300">YN</div>
+            <div id="avatar-drop" class="dropzone flex items-center gap-2.5 rounded-xl border border-dashed border-zinc-300 bg-white px-2.5 py-2 cursor-pointer sm:w-[9.5rem] shrink-0">
+              <img id="avatar-thumb" alt="" class="h-9 w-9 rounded-full object-cover bg-zinc-100 hidden" />
+              <div id="avatar-placeholder" class="h-9 w-9 rounded-full bg-zinc-100 grid place-items-center text-[10px] font-semibold text-zinc-500">YN</div>
               <div class="min-w-0 flex-1">
-                <p class="text-[12px] text-zinc-200 leading-4">Avatar</p>
-                <button type="button" id="avatar-pick" class="text-[11px] font-medium text-sky-300 hover:text-sky-200">Browse</button>
-                <button type="button" id="avatar-clear" class="hidden text-[11px] text-zinc-400 hover:text-zinc-200 ml-1">Remove</button>
+                <p class="text-[12px] text-zinc-800 leading-4">Avatar</p>
+                <button type="button" id="avatar-pick" class="text-[11px] font-medium text-blue-600 hover:text-blue-700">Browse</button>
+                <button type="button" id="avatar-clear" class="hidden text-[11px] text-zinc-500 hover:text-zinc-800 ml-1">Remove</button>
               </div>
               <input id="avatar-file" type="file" accept="image/*" />
             </div>
             <input id="name-input" type="text" value="Your Name" placeholder="Your name" aria-label="Profile name"
-              class="field flex-1 min-w-0 h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              class="field flex-1 min-w-0 h-11 rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
             <input id="headline-input" type="text" value="Founder · Building in public" placeholder="Your headline or bio" aria-label="Headline / bio"
-              class="field flex-1 min-w-0 h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
+              class="field flex-1 min-w-0 h-11 rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
             <input id="handle-input" type="text" value="you" placeholder="yourhandle" aria-label="Handle"
-              class="field hidden flex-1 min-w-0 h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
-            <label class="flex items-center justify-between gap-2 rounded-xl bg-ink-950 px-3 h-11 ring-1 ring-white/10 shrink-0">
-              <span class="text-[13px] text-zinc-300">Verified</span>
-              <input id="verified-input" type="checkbox" checked class="h-4 w-4 accent-sky-400" />
+              class="field hidden flex-1 min-w-0 h-11 rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
+            <label class="flex items-center justify-between gap-2 rounded-xl bg-white px-3 h-11 ring-1 ring-zinc-200 shrink-0">
+              <span class="text-[13px] text-zinc-700">Verified</span>
+              <input id="verified-input" type="checkbox" checked class="h-4 w-4 accent-blue-600" />
             </label>
           </div>
 
           <div class="space-y-2">
             <div class="flex items-center justify-between gap-3">
-              <label id="text-label" for="text-input" class="text-[12px] text-zinc-400">Post text</label>
+              <label id="text-label" for="text-input" class="text-[12px] text-zinc-500">Post text</label>
               <div id="char-meter" class="flex items-center gap-2 text-[11px] tabular-nums text-zinc-500">
                 <svg id="limit-ring" class="limit-ring hidden h-5 w-5" viewBox="0 0 20 20" aria-hidden="true">
-                  <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="2" />
-                  <circle id="limit-arc" cx="10" cy="10" r="7" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-dasharray="44" stroke-dashoffset="44" />
+                  <circle cx="10" cy="10" r="7" fill="none" stroke="rgba(15,23,42,.12)" stroke-width="2" />
+                  <circle id="limit-arc" cx="10" cy="10" r="7" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-dasharray="44" stroke-dashoffset="44" />
                 </svg>
                 <span id="char-count">0</span>
               </div>
             </div>
             <textarea id="text-input" rows="4" placeholder="Type your post here — the preview updates live"
-              class="field w-full resize-none rounded-xl bg-ink-950 px-3.5 py-3 text-sm leading-relaxed ring-1 ring-white/10 outline-none placeholder:text-zinc-600">Just shipped the thing I kept talking myself out of.
+              class="field w-full resize-none rounded-xl bg-white px-3.5 py-3 text-sm leading-relaxed ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400">Just shipped the thing I kept talking myself out of.
 
 A tiny studio that turns any screenshot into a real-looking social post.
 
 This preview is yours — type over it and download.</textarea>
           </div>
 
-          <div id="image-drop" class="dropzone rounded-xl border border-dashed border-white/15 bg-ink-950 px-3 py-2.5 cursor-pointer">
+          <div id="image-drop" class="dropzone rounded-xl border border-dashed border-zinc-300 bg-white px-3 py-2.5 cursor-pointer">
             <div id="image-empty" class="flex items-center gap-3">
-              <div class="h-9 w-9 rounded-lg bg-zinc-800 grid place-items-center text-zinc-400">
+              <div class="h-9 w-9 rounded-lg bg-zinc-100 grid place-items-center text-zinc-400">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-4.5-4.5L9 18"/></svg>
               </div>
               <div class="min-w-0 flex-1">
-                <p class="text-[13px] text-zinc-200">Drop a screenshot into the post</p>
+                <p class="text-[13px] text-zinc-800">Drop a screenshot into the post</p>
                 <p class="text-[11px] text-zinc-500">PNG or JPG · drag, browse, or paste</p>
               </div>
-              <button type="button" id="image-pick" class="text-xs font-medium text-sky-300 hover:text-sky-200">Browse</button>
+              <button type="button" id="image-pick" class="text-xs font-medium text-blue-600 hover:text-blue-700">Browse</button>
             </div>
             <div id="image-filled" class="hidden items-center gap-3">
-              <img id="image-thumb" alt="" class="h-10 w-14 rounded-lg object-cover bg-zinc-800" />
+              <img id="image-thumb" alt="" class="h-10 w-14 rounded-lg object-cover bg-zinc-100" />
               <div class="min-w-0 flex-1">
-                <p class="text-[13px] text-zinc-200 truncate">Screenshot attached</p>
+                <p class="text-[13px] text-zinc-800 truncate">Screenshot attached</p>
                 <p class="text-[11px] text-zinc-500">Embedded in the live preview</p>
               </div>
-              <button type="button" id="image-clear" class="text-xs text-zinc-400 hover:text-zinc-200">Remove</button>
+              <button type="button" id="image-clear" class="text-xs text-zinc-500 hover:text-zinc-800">Remove</button>
             </div>
             <input id="image-file" type="file" accept="image/*" />
           </div>
@@ -314,21 +307,21 @@ This preview is yours — type over it and download.</textarea>
           <div id="preview-mount" class="relative w-full max-w-[560px]"></div>
           <div class="mt-6 w-full flex flex-col items-center gap-2.5">
             <button type="button" id="download-btn"
-              class="export-cta w-full min-h-[56px] rounded-2xl bg-white text-ink-950 text-[15px] font-semibold tracking-tight hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none inline-flex items-center justify-center gap-2.5 px-6">
+              class="export-cta w-full min-h-[56px] rounded-2xl bg-blue-600 text-white text-[15px] font-semibold tracking-tight hover:bg-blue-500 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none inline-flex items-center justify-center gap-2.5 px-6">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
               <span id="download-label">Download pixel-perfect PNG</span>
             </button>
-            <p class="text-[12px] text-zinc-400">Free · Instant · No signup</p>
+            <p class="text-[12px] text-zinc-500">Free · Instant · No signup</p>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <footer class="border-t border-white/[0.06] bg-ink-950">
-    <div class="mx-auto max-w-3xl px-6 sm:px-8 py-14 space-y-10 text-sm leading-relaxed text-zinc-400">
+  <footer class="border-t border-zinc-200 bg-white">
+    <div class="mx-auto max-w-3xl px-6 sm:px-8 py-14 space-y-10 text-sm leading-relaxed text-zinc-500">
       <section class="space-y-4">
-        <h2 class="text-zinc-200 text-base font-semibold tracking-tight">Free social media post mockup generator</h2>
+        <h2 class="text-zinc-900 text-base font-semibold tracking-tight">Free social media post mockup generator</h2>
         <p>
           SocialPostMockup is a free social media post mockup generator for founders, marketers, and creators.
           Frame screenshots and write captions in a live preview, then export a pixel-perfect PNG — no signup required.
@@ -341,32 +334,32 @@ This preview is yours — type over it and download.</textarea>
 
       <section class="grid gap-8 sm:grid-cols-3">
         <div class="space-y-2">
-          <h3 class="text-zinc-200 text-[13px] font-semibold tracking-tight">LinkedIn mockups</h3>
+          <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">LinkedIn mockups</h3>
           <p>Build a professional LinkedIn feed card with headline, reactions, and a screenshot — then download it as a PNG.</p>
         </div>
         <div class="space-y-2">
-          <h3 class="text-zinc-200 text-[13px] font-semibold tracking-tight">X and LinkedIn screenshot framer</h3>
+          <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">X and LinkedIn screenshot framer</h3>
           <p>Drop in a product shot and frame it as an authentic X (Twitter) post with handle, verified badge, and engagement metrics.</p>
         </div>
         <div class="space-y-2">
-          <h3 class="text-zinc-200 text-[13px] font-semibold tracking-tight">Instagram post frames</h3>
+          <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Instagram post frames</h3>
           <p>Preview captions, likes, and a 4:5 photo area so Instagram mockups match the look of a real feed post.</p>
         </div>
       </section>
 
       <section class="space-y-4">
-        <h2 class="text-zinc-200 text-base font-semibold tracking-tight">FAQ</h2>
+        <h2 class="text-zinc-900 text-base font-semibold tracking-tight">FAQ</h2>
         <div class="space-y-4">
           <div class="space-y-1.5">
-            <h3 class="text-zinc-200 text-[13px] font-semibold tracking-tight">Is it free?</h3>
+            <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Is it free?</h3>
             <p>Yes. SocialPostMockup is a free social media post mockup generator. You can design LinkedIn, X, and Instagram cards and export a PNG with no paid plan.</p>
           </div>
           <div class="space-y-1.5">
-            <h3 class="text-zinc-200 text-[13px] font-semibold tracking-tight">Do I need an account?</h3>
+            <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Do I need an account?</h3>
             <p>No. Everything runs in the browser. You do not need to create an account or sign in to use the studio or download a mockup.</p>
           </div>
           <div class="space-y-1.5">
-            <h3 class="text-zinc-200 text-[13px] font-semibold tracking-tight">Which platforms?</h3>
+            <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Which platforms?</h3>
             <p>The studio includes LinkedIn feed cards, X (Twitter) posts, and Instagram caption frames, so you can mock up the three most common social formats in one tool.</p>
           </div>
         </div>
@@ -374,7 +367,7 @@ This preview is yours — type over it and download.</textarea>
 
       <p>
         Generate LinkedIn post mockups, tweet mockups, and Instagram post frames in the browser at
-        <a href="https://socialmockup.online/" class="text-zinc-200 underline decoration-white/20 underline-offset-2 hover:text-white">socialmockup.online</a>.
+        <a href="https://socialmockup.online/" class="text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">socialmockup.online</a>.
       </p>
     </div>
   </footer>
@@ -644,7 +637,7 @@ This preview is yours — type over it and download.</textarea>
       document.querySelectorAll('.platform-btn').forEach((btn) => {
         const active = btn.dataset.platform === state.platform;
         btn.className = `platform-btn h-9 rounded-lg text-[13px] font-medium transition ${
-          active ? 'bg-white text-ink-950 shadow-sm' : 'text-zinc-400 hover:text-zinc-200'
+          active ? 'bg-white text-zinc-900 shadow-sm ring-1 ring-zinc-200' : 'text-zinc-500 hover:text-zinc-800'
         }`;
         btn.setAttribute('aria-selected', String(active));
       });
