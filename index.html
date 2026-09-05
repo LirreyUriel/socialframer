@@ -210,12 +210,37 @@
       white-space: nowrap;
     }
     .limit-ring { transform: rotate(-90deg); }
+    #preview-mount #preview-card {
+      width: 100%;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.06),
+        0 40px 90px -28px rgba(0,0,0,.78),
+        0 18px 40px -20px rgba(0,0,0,.55);
+    }
+    .export-cta {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.1),
+        0 18px 50px -16px rgba(255,255,255,.38),
+        0 28px 70px -30px rgba(0,0,0,.75);
+    }
+    .export-cta:hover {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.16),
+        0 22px 56px -12px rgba(255,255,255,.48),
+        0 28px 70px -30px rgba(0,0,0,.75);
+    }
+    .cta-dock {
+      background: linear-gradient(to top, rgba(5,5,7,.92) 55%, rgba(5,5,7,0));
+    }
+    @media (min-width: 1024px) {
+      .cta-dock { background: transparent; }
+    }
   </style>
 </head>
 <body class="min-h-screen font-sans text-zinc-100 antialiased">
-  <div class="h-screen flex flex-col overflow-hidden">
+  <div class="min-h-screen lg:h-screen flex flex-col lg:overflow-hidden">
     <header class="shrink-0 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl">
-      <div class="px-6 sm:px-8 h-14 flex items-center">
+      <div class="px-5 sm:px-8 h-14 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3 min-w-0">
           <div class="relative h-7 w-7 shrink-0">
             <span class="absolute left-0 top-1 h-4 w-4 rounded-[5px] bg-sky-400"></span>
@@ -223,15 +248,20 @@
           </div>
           <div class="min-w-0">
             <h1 class="text-[14px] font-semibold tracking-tight truncate">Free social media post mockup generator</h1>
-            <p class="text-[11px] text-zinc-500 hidden sm:block">SocialPostMockup · export a pixel-perfect PNG</p>
+            <p class="text-[11px] text-zinc-500 hidden sm:block">Type, preview, download — free PNG, no signup</p>
           </div>
         </div>
+        <p class="hidden sm:flex items-center gap-2 shrink-0 text-[11px] font-medium text-zinc-400">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+          Free · No account
+        </p>
       </div>
     </header>
 
-    <main class="flex-1 min-h-0 grid grid-rows-[minmax(0,1fr)_minmax(280px,1.05fr)] lg:grid-rows-none lg:grid-cols-[400px_minmax(0,1fr)]">
-      <aside class="border-b lg:border-b-0 lg:border-r border-white/[0.06] bg-ink-900 min-h-0 flex flex-col">
-        <form id="controls" class="sidebar-scroll px-6 sm:px-8 py-8 space-y-10 overflow-y-auto overflow-x-hidden flex-1" autocomplete="off">
+    <main class="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-[minmax(300px,380px)_minmax(0,1fr)]">
+      <aside class="order-2 lg:order-1 border-t lg:border-t-0 lg:border-r border-white/[0.06] bg-ink-900 min-h-0 flex flex-col">
+        <form id="controls" class="sidebar-scroll px-5 sm:px-6 py-6 space-y-8 overflow-y-auto overflow-x-hidden flex-1" autocomplete="off">
+          <p class="text-[13px] text-zinc-400">Edit anything — the preview updates live. Start with the post text.</p>
           <section class="space-y-3.5">
             <h2 class="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">Platform</h2>
             <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-black/40 ring-1 ring-white/[0.06]" role="tablist">
@@ -246,17 +276,17 @@
             <div class="space-y-4">
               <label class="block space-y-2">
                 <span class="text-[12px] text-zinc-400">Profile name</span>
-                <input id="name-input" type="text" value="Lirrey" placeholder="Lirrey"
+                <input id="name-input" type="text" value="Your Name" placeholder="Your name"
                   class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
               </label>
               <label id="headline-field" class="block space-y-2">
                 <span class="text-[12px] text-zinc-400">Headline / bio</span>
-                <input id="headline-input" type="text" value="Building micro-SaaS in public 🚀" placeholder="Building micro-SaaS in public 🚀"
+                <input id="headline-input" type="text" value="Founder · Building in public" placeholder="Your headline or bio"
                   class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
               </label>
               <label id="handle-field" class="hidden space-y-2">
                 <span class="text-[12px] text-zinc-400">Handle</span>
-                <input id="handle-input" type="text" value="lirrey" placeholder="lirrey"
+                <input id="handle-input" type="text" value="you" placeholder="yourhandle"
                   class="field w-full h-11 rounded-xl bg-ink-950 px-3.5 text-sm ring-1 ring-white/10 outline-none placeholder:text-zinc-600" />
               </label>
               <label class="flex items-center justify-between gap-3 rounded-xl bg-ink-950 px-3.5 h-11 ring-1 ring-white/10">
@@ -267,7 +297,7 @@
                 <span class="text-[12px] text-zinc-400">Avatar</span>
                 <div id="avatar-drop" class="dropzone flex items-center gap-3.5 rounded-xl border border-dashed border-white/15 bg-ink-950 p-3.5 cursor-pointer">
                   <img id="avatar-thumb" alt="" class="h-12 w-12 rounded-full object-cover bg-zinc-800 hidden" />
-                  <div id="avatar-placeholder" class="h-12 w-12 rounded-full bg-zinc-800 grid place-items-center text-xs font-semibold text-zinc-300">L</div>
+                  <div id="avatar-placeholder" class="h-12 w-12 rounded-full bg-zinc-800 grid place-items-center text-xs font-semibold text-zinc-300">YN</div>
                   <div class="min-w-0 flex-1">
                     <p class="text-sm text-zinc-200">Upload a photo</p>
                     <p class="text-[11px] text-zinc-500 mt-0.5">PNG or JPG · drag & drop</p>
@@ -293,12 +323,12 @@
             </div>
             <label class="block space-y-2">
               <span id="text-label" class="text-[12px] text-zinc-400">Post text</span>
-              <textarea id="text-input" rows="6" placeholder="Write the post you want to mock up…"
-                class="field w-full resize-none rounded-xl bg-ink-950 px-3.5 py-3.5 text-sm leading-relaxed ring-1 ring-white/10 outline-none placeholder:text-zinc-600">Just shipped something I've been quietly building.
+              <textarea id="text-input" rows="6" placeholder="Type your post here — the preview updates live"
+                class="field w-full resize-none rounded-xl bg-ink-950 px-3.5 py-3.5 text-sm leading-relaxed ring-1 ring-white/10 outline-none placeholder:text-zinc-600">Just shipped the thing I kept talking myself out of.
 
-A small tool that turns any idea into a polished social post — instantly.
+A tiny studio that turns any screenshot into a real-looking social post.
 
-Would love your feedback. #buildinpublic</textarea>
+This preview is yours — type over it and download.</textarea>
             </label>
             <div class="space-y-2">
               <span class="text-[12px] text-zinc-400">Attached screenshot / image</span>
@@ -326,21 +356,24 @@ Would love your feedback. #buildinpublic</textarea>
             </div>
           </section>
         </form>
-        <div class="shrink-0 px-6 sm:px-7 py-5 border-t border-white/[0.06] bg-ink-900 space-y-3.5">
-          <label class="flex items-center justify-between gap-3">
-            <span class="text-[12px] text-zinc-500">Watermark on export</span>
-            <input id="watermark-input" type="checkbox" checked class="toggle" aria-label="Show socialmockup.online watermark" />
-          </label>
-          <button type="button" id="download-btn"
-            class="w-full min-h-[48px] rounded-xl bg-white text-ink-950 text-[14px] font-semibold tracking-tight shadow-glow hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none">
-            Export Pixel-Perfect PNG
-          </button>
-        </div>
       </aside>
 
-      <section id="preview-stage" class="preview-stage relative min-h-0 overflow-hidden grid place-items-center px-6 py-8 sm:px-12" data-platform="linkedin">
+      <section id="preview-stage" class="order-1 lg:order-2 preview-stage relative h-[calc(100svh-3.5rem)] lg:h-auto lg:min-h-0 overflow-hidden lg:overflow-y-auto flex flex-col items-center" style="justify-content: safe center" data-platform="linkedin">
         <div class="preview-vignette absolute inset-0"></div>
-        <div id="preview-mount" class="relative w-full max-w-[540px]"></div>
+        <div class="relative z-10 flex-1 min-h-0 w-full overflow-y-auto lg:flex-none lg:overflow-visible flex flex-col items-center px-5 py-6 sm:px-10 lg:px-14 lg:pt-8">
+          <p class="mb-5 text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Live preview</p>
+          <div id="preview-mount" class="relative w-full max-w-[680px]"></div>
+        </div>
+        <div class="cta-dock relative z-20 shrink-0 w-full flex flex-col items-center px-5 pt-4 pb-5 sm:px-10 lg:px-14 lg:pt-7 lg:pb-8">
+          <div class="w-full max-w-md flex flex-col items-center gap-2.5">
+            <button type="button" id="download-btn"
+              class="export-cta w-full min-h-[56px] rounded-2xl bg-white text-ink-950 text-[15px] font-semibold tracking-tight hover:bg-zinc-100 active:scale-[.99] transition disabled:opacity-60 disabled:pointer-events-none inline-flex items-center justify-center gap-2.5 px-6">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M4 21h16"/></svg>
+              <span id="download-label">Download pixel-perfect PNG</span>
+            </button>
+            <p class="text-[12px] text-zinc-400">Free · Instant · No signup</p>
+          </div>
+        </div>
       </section>
     </main>
   </div>
@@ -402,15 +435,15 @@ Would love your feedback. #buildinpublic</textarea>
   <script>
     const LIMITS = { linkedin: 3000, x: 280, instagram: 2200 };
     const LINKEDIN_PREVIEW_CHARS = 210;
-    const EXPORT_LABEL = 'Export Pixel-Perfect PNG';
+    const EXPORT_LABEL = 'Download pixel-perfect PNG';
 
     const state = {
       platform: 'linkedin',
-      name: 'Lirrey',
-      headline: 'Building micro-SaaS in public 🚀',
-      handle: 'lirrey',
+      name: 'Your Name',
+      headline: 'Founder · Building in public',
+      handle: 'you',
       verified: true,
-      watermark: true,
+      watermark: false,
       avatar: null,
       text: document.getElementById('text-input').value,
       image: null
@@ -431,6 +464,7 @@ Would love your feedback. #buildinpublic</textarea>
       mount: document.getElementById('preview-mount'),
       stage: document.getElementById('preview-stage'),
       download: document.getElementById('download-btn'),
+      downloadLabel: document.getElementById('download-label'),
       avatarFile: document.getElementById('avatar-file'),
       avatarDrop: document.getElementById('avatar-drop'),
       avatarThumb: document.getElementById('avatar-thumb'),
@@ -440,8 +474,7 @@ Would love your feedback. #buildinpublic</textarea>
       imageDrop: document.getElementById('image-drop'),
       imageEmpty: document.getElementById('image-empty'),
       imageFilled: document.getElementById('image-filled'),
-      imageThumb: document.getElementById('image-thumb'),
-      watermark: document.getElementById('watermark-input')
+      imageThumb: document.getElementById('image-thumb')
     };
 
     function escapeHtml(value) {
@@ -457,7 +490,7 @@ Would love your feedback. #buildinpublic</textarea>
         .filter(Boolean)
         .slice(0, 2)
         .map((part) => part[0].toUpperCase())
-        .join('') || 'L';
+        .join('') || 'Y';
     }
 
     function defaultAvatarUrl(name) {
@@ -495,7 +528,7 @@ Would love your feedback. #buildinpublic</textarea>
     function displayHandle() {
       const raw = state.handle.trim().replace(/^@/, '');
       if (raw) return raw;
-      return state.name.toLowerCase().replace(/[^a-z0-9]+/g, '') || 'lirrey';
+      return state.name.toLowerCase().replace(/[^a-z0-9]+/g, '') || 'you';
     }
 
     function verifiedBadge(platform) {
@@ -596,7 +629,7 @@ Would love your feedback. #buildinpublic</textarea>
       const meta = (icon, count, label) =>
         `<span class="flex items-center gap-1.5" title="${label}">${icon}<span>${count}</span></span>`;
       return `
-        <article id="preview-card" class="overflow-hidden rounded-2xl bg-black text-[#e7e9ea] shadow-card max-w-[510px] mx-auto ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#000000;border:1px solid #2f3336">
+        <article id="preview-card" class="overflow-hidden rounded-2xl bg-black text-[#e7e9ea] shadow-card mx-auto ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#000000;border:1px solid #2f3336">
           <div class="px-4 py-3">
             <div class="flex gap-3">
               <img src="${avatarSrc()}" alt="" class="h-10 w-10 rounded-full object-cover" />
@@ -630,7 +663,7 @@ Would love your feedback. #buildinpublic</textarea>
         ? `<img src="${state.image}" alt="" class="w-full aspect-[4/5] max-h-[520px] object-cover" />`
         : `<div class="aspect-[4/5] w-full bg-[#fafafa] grid place-items-center text-[#8e8e8e] text-[13px]">Add a photo to complete the post</div>`;
       return `
-        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#262626] shadow-card max-w-[470px] mx-auto ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#ffffff;border:1px solid #00000014">
+        <article id="preview-card" class="overflow-hidden rounded-xl bg-white text-[#262626] shadow-card mx-auto ${state.watermark ? 'pb-6' : ''}" style="font-family:Inter,system-ui,sans-serif;background-color:#ffffff;border:1px solid #00000014">
           <div class="flex items-center gap-2.5 px-3 py-2.5">
             <div class="ig-ring"><img src="${avatarSrc()}" alt="" class="h-8 w-8 rounded-full object-cover bg-white" /></div>
             <div class="min-w-0 flex-1 flex items-center gap-1">
@@ -681,7 +714,7 @@ Would love your feedback. #buildinpublic</textarea>
       els.textLabel.textContent = isX ? 'Tweet text' : isLinkedIn ? 'Post text' : 'Caption';
       els.text.rows = isX ? 5 : 6;
       els.text.maxLength = LIMITS[state.platform];
-      els.mount.className = `relative w-full ${isX ? 'max-w-[510px]' : state.platform === 'instagram' ? 'max-w-[470px]' : 'max-w-[540px]'}`;
+      els.mount.className = `relative w-full ${isX ? 'max-w-[600px]' : state.platform === 'instagram' ? 'max-w-[440px]' : 'max-w-[680px]'}`;
     }
 
     function updateCharCount() {
@@ -781,10 +814,6 @@ Would love your feedback. #buildinpublic</textarea>
       state.verified = els.verified.checked;
       renderPreview();
     });
-    els.watermark.addEventListener('change', () => {
-      state.watermark = els.watermark.checked;
-      renderPreview();
-    });
     els.text.addEventListener('input', () => {
       state.text = els.text.value;
       updateCharCount();
@@ -882,7 +911,7 @@ Would love your feedback. #buildinpublic</textarea>
       const card = document.getElementById('preview-card');
       if (!card || !window.htmlToImage) return;
       els.download.disabled = true;
-      els.download.textContent = 'Exporting…';
+      els.downloadLabel.textContent = 'Downloading…';
       try {
         if (document.fonts?.ready) await document.fonts.ready;
         await waitForImages(card);
@@ -900,11 +929,11 @@ Would love your feedback. #buildinpublic</textarea>
         logDownload();
       } catch (error) {
         console.error(error);
-        els.download.textContent = 'Export failed — try again';
+        els.downloadLabel.textContent = 'Download failed — try again';
         await new Promise((resolve) => setTimeout(resolve, 1600));
       } finally {
         els.download.disabled = false;
-        els.download.textContent = EXPORT_LABEL;
+        els.downloadLabel.textContent = EXPORT_LABEL;
       }
     });
 
@@ -917,6 +946,11 @@ Would love your feedback. #buildinpublic</textarea>
     syncAvatarUi();
     syncImageUi();
     renderPreview();
+
+    if (window.matchMedia('(min-width: 1024px)').matches) {
+      els.text.focus({ preventScroll: true });
+      els.text.select();
+    }
   </script>
 </body>
 </html>
