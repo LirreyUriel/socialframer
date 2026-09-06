@@ -253,10 +253,13 @@
     <main class="flex-1 flex flex-col">
       <form id="controls" class="shrink-0 border-b border-zinc-200 bg-white" autocomplete="off">
         <div class="mx-auto max-w-3xl px-4 sm:px-6 py-4 space-y-3">
-          <div class="grid grid-cols-3 gap-1 p-1 rounded-xl bg-zinc-100 ring-1 ring-zinc-200" role="tablist">
-            <button type="button" data-platform="linkedin" title="LinkedIn" class="platform-btn h-9 rounded-lg text-[13px] font-medium">LinkedIn</button>
-            <button type="button" data-platform="x" title="X (Twitter)" class="platform-btn h-9 rounded-lg text-[13px] font-medium">X</button>
-            <button type="button" data-platform="instagram" title="Instagram" class="platform-btn h-9 rounded-lg text-[13px] font-medium">Instagram</button>
+          <div class="flex items-center gap-2">
+            <div class="grid grid-cols-3 flex-1 gap-1 p-1 rounded-xl bg-zinc-100 ring-1 ring-zinc-200" role="tablist">
+              <button type="button" data-platform="linkedin" title="LinkedIn" class="platform-btn h-9 rounded-lg text-[13px] font-medium">LinkedIn</button>
+              <button type="button" data-platform="x" title="X (Twitter)" class="platform-btn h-9 rounded-lg text-[13px] font-medium">X</button>
+              <button type="button" data-platform="instagram" title="Instagram" class="platform-btn h-9 rounded-lg text-[13px] font-medium">Instagram</button>
+            </div>
+            <button type="button" id="new-mockup-btn" class="h-11 shrink-0 rounded-xl px-3 text-[12px] font-medium text-zinc-600 ring-1 ring-zinc-200 hover:bg-zinc-50">New</button>
           </div>
 
           <div class="flex flex-col sm:flex-row sm:items-stretch gap-2.5">
@@ -293,8 +296,8 @@
                 <span id="char-count">0</span>
               </div>
             </div>
-            <textarea id="text-input" rows="4" placeholder="Type your post here — the preview updates live"
-              class="field w-full resize-none rounded-xl bg-white px-3.5 py-3 text-sm leading-relaxed ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400">Just shipped the thing I kept talking myself out of.
+            <textarea id="text-input" rows="7" placeholder="Type your post here — the preview updates live"
+              class="field w-full min-h-[168px] resize-none rounded-xl bg-white px-3.5 py-3 text-sm leading-relaxed ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400">Just shipped the thing I kept talking myself out of.
 
 A tiny studio that turns any screenshot into a real-looking social post.
 
@@ -323,30 +326,46 @@ This preview is yours — type over it and download.</textarea>
             <input id="image-file" type="file" accept="image/*" />
           </div>
 
-          <div id="brand-kit-panel" class="rounded-xl bg-zinc-50 ring-1 ring-zinc-200 p-3 space-y-3">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-[13px] font-semibold text-zinc-800">Brand kit</p>
-                <p id="brand-kit-hint" class="text-[12px] text-zinc-500">Sign in to save avatar, colors, and profile defaults</p>
-              </div>
-              <button type="button" id="new-mockup-btn" class="h-9 rounded-lg px-3 text-[12px] font-medium text-zinc-600 ring-1 ring-zinc-200 hover:bg-white">New mockup</button>
+          <div id="interactions-panel" class="rounded-xl bg-zinc-50 ring-1 ring-zinc-200 p-3 space-y-2">
+            <p class="text-[12px] font-medium text-zinc-600">Interactions</p>
+            <div id="li-interactions" class="grid grid-cols-3 gap-2">
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Reactions</span>
+                <input id="li-reactions" type="number" min="0" step="1" value="24" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Comments</span>
+                <input id="li-comments" type="number" min="0" step="1" value="8" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Reposts</span>
+                <input id="li-reposts" type="number" min="0" step="1" value="3" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
             </div>
-            <div class="grid sm:grid-cols-[1fr_auto] gap-2.5">
-              <input id="avatar-url-input" type="url" placeholder="Avatar URL — paste a permanent image link"
-                class="field h-10 rounded-xl bg-white px-3 text-[13px] ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
-              <div class="flex items-center gap-2">
-                <label class="text-[11px] text-zinc-500">Colors</label>
-                <input id="color-primary" type="color" value="#2563eb" title="Primary" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
-                <input id="color-secondary" type="color" value="#0ea5e9" title="Secondary" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
-                <input id="color-accent" type="color" value="#ec4899" title="Accent" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
-              </div>
-            </div>
-            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-              <button type="button" id="brand-kit-btn"
-                class="h-10 rounded-xl px-3.5 text-[13px] font-medium text-zinc-700 bg-white ring-1 ring-zinc-200 hover:bg-zinc-50 transition">
-                Save brand kit
-              </button>
-              <p id="brand-kit-status" class="text-[12px] text-zinc-500"></p>
+            <div id="x-interactions" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Replies</span>
+                <input id="x-replies" type="number" min="0" step="1" value="12" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Reposts</span>
+                <input id="x-reposts" type="number" min="0" step="1" value="4" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Likes</span>
+                <input id="x-likes" type="number" min="0" step="1" value="89" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
+              <label class="space-y-1">
+                <span class="block text-[11px] text-zinc-500">Views</span>
+                <input id="x-views" type="number" min="0" step="1" value="2100" inputmode="numeric"
+                  class="field h-10 w-full rounded-lg bg-white px-2.5 text-[13px] ring-1 ring-zinc-200 outline-none" />
+              </label>
             </div>
           </div>
         </div>
@@ -375,7 +394,7 @@ This preview is yours — type over it and download.</textarea>
         </div>
       </section>
 
-      <section id="schedule-section" class="border-t border-zinc-200 bg-[#e8edf3]">
+      <section id="schedule-section" class="border-t border-rose-100 bg-[#f8e4ea]">
         <div class="mx-auto w-full max-w-[560px] px-4 py-6 space-y-3">
           <div class="flex items-center justify-between gap-2">
             <h2 class="text-[12px] font-medium uppercase tracking-wide text-zinc-500">Schedule</h2>
@@ -403,62 +422,67 @@ This preview is yours — type over it and download.</textarea>
   </div>
 
   <footer class="border-t border-zinc-200 bg-white">
-    <div class="mx-auto max-w-3xl px-6 sm:px-8 py-14 space-y-10 text-sm leading-relaxed text-zinc-500">
-      <section class="space-y-4">
-        <h2 class="text-zinc-900 text-base font-semibold tracking-tight">Free social media post mockup generator</h2>
-        <p>
-          SocialPostMockup is a free social media post mockup generator for founders, marketers, and creators.
-          Frame screenshots and write captions in a live preview, then export a pixel-perfect PNG. The first download is free without an account.
-        </p>
-        <p>
-          Use it as an X and LinkedIn screenshot framer, or design an Instagram caption post.
-          The studio includes LinkedIn, X (Twitter), and Instagram layouts so your mockups look like real feed cards.
-        </p>
-      </section>
+    <div class="mx-auto max-w-6xl px-6 sm:px-8 py-14 text-sm leading-relaxed text-zinc-500">
+      <div class="grid gap-12 lg:grid-cols-2 lg:items-start">
+        <div class="space-y-10">
+          <section class="space-y-4">
+            <h2 class="text-zinc-900 text-base font-semibold tracking-tight">Free social media post mockup generator</h2>
+            <p>
+              SocialPostMockup is a free social media post mockup generator for founders, marketers, and creators.
+              Frame screenshots and write captions in a live preview, then export a pixel-perfect PNG. The first download is free without an account.
+            </p>
+            <p>
+              Use it as an X and LinkedIn screenshot framer, or design an Instagram caption post.
+              The studio includes LinkedIn, X (Twitter), and Instagram layouts so your mockups look like real feed cards.
+            </p>
+          </section>
 
-      <section class="grid gap-8 sm:grid-cols-3">
-        <div class="space-y-2">
-          <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">LinkedIn mockups</h3>
-          <p>Build a professional LinkedIn feed card with headline, reactions, and a screenshot — then download it as a PNG.</p>
-        </div>
-        <div class="space-y-2">
-          <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">X and LinkedIn screenshot framer</h3>
-          <p>Drop in a product shot and frame it as an authentic X (Twitter) post with handle, verified badge, and engagement metrics.</p>
-        </div>
-        <div class="space-y-2">
-          <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Instagram post frames</h3>
-          <p>Preview captions, likes, and a 4:5 photo area so Instagram mockups match the look of a real feed post.</p>
-        </div>
-      </section>
+          <section class="grid gap-8 sm:grid-cols-3">
+            <div class="space-y-2">
+              <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">LinkedIn mockups</h3>
+              <p>Build a professional LinkedIn feed card with headline, reactions, and a screenshot — then download it as a PNG.</p>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">X and LinkedIn screenshot framer</h3>
+              <p>Drop in a product shot and frame it as an authentic X (Twitter) post with handle, verified badge, and engagement metrics.</p>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Instagram post frames</h3>
+              <p>Preview captions, likes, and a 4:5 photo area so Instagram mockups match the look of a real feed post.</p>
+            </div>
+          </section>
 
-      <section class="space-y-4">
-        <h2 class="text-zinc-900 text-base font-semibold tracking-tight">FAQ</h2>
-        <div class="space-y-4">
-          <div class="space-y-1.5">
-            <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Is it free?</h3>
-            <p>Yes. SocialPostMockup is a free social media post mockup generator. You can design LinkedIn, X, and Instagram cards and export a PNG with no paid plan.</p>
-          </div>
-          <div class="space-y-1.5">
-            <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Do I need an account?</h3>
-            <p>The first download is free without an account. Sign in with Google to export more mockups. A watermark is added after two downloads in 24 hours unless you upgrade.</p>
-          </div>
-          <div class="space-y-1.5">
-            <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Which platforms?</h3>
-            <p>The studio includes LinkedIn feed cards, X (Twitter) posts, and Instagram caption frames, so you can mock up the three most common social formats in one tool.</p>
+          <div class="space-y-4">
+            <p>
+              Generate LinkedIn post mockups, tweet mockups, and Instagram post frames in the browser at
+              <a href="https://socialmockup.online/" class="text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">socialmockup.online</a>.
+            </p>
+            <nav class="flex flex-wrap gap-x-5 gap-y-2 text-[13px]" aria-label="Legal">
+              <a href="/terms.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Terms of Service</a>
+              <a href="/privacy.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Privacy Notice</a>
+              <a href="/refund.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Refund Policy</a>
+            </nav>
           </div>
         </div>
-      </section>
 
-      <p>
-        Generate LinkedIn post mockups, tweet mockups, and Instagram post frames in the browser at
-        <a href="https://socialmockup.online/" class="text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">socialmockup.online</a>.
-      </p>
-
-      <nav class="flex flex-wrap gap-x-5 gap-y-2 pt-2 text-[13px]" aria-label="Legal">
-        <a href="/terms.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Terms of Service</a>
-        <a href="/privacy.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Privacy Notice</a>
-        <a href="/refund.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Refund Policy</a>
-      </nav>
+        <section class="space-y-4 lg:pl-4">
+          <h2 class="text-zinc-900 text-base font-semibold tracking-tight">FAQ</h2>
+          <div class="space-y-4">
+            <div class="space-y-1.5">
+              <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Is it free?</h3>
+              <p>Yes. SocialPostMockup is a free social media post mockup generator. You can design LinkedIn, X, and Instagram cards and export a PNG with no paid plan.</p>
+            </div>
+            <div class="space-y-1.5">
+              <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Do I need an account?</h3>
+              <p>The first download is free without an account. Sign in with Google to export more mockups. A watermark is added after two downloads in 24 hours unless you upgrade.</p>
+            </div>
+            <div class="space-y-1.5">
+              <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Which platforms?</h3>
+              <p>The studio includes LinkedIn feed cards, X (Twitter) posts, and Instagram caption frames, so you can mock up the three most common social formats in one tool.</p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </footer>
 
@@ -508,7 +532,14 @@ This preview is yours — type over it and download.</textarea>
       brandKit: null,
       scheduledDate: null,
       editingPostId: null,
-      isPremium: false
+      isPremium: false,
+      liReactions: 24,
+      liComments: 8,
+      liReposts: 3,
+      xReplies: 12,
+      xReposts: 4,
+      xLikes: 89,
+      xViews: 2100
     };
 
     const els = {
@@ -539,6 +570,16 @@ This preview is yours — type over it and download.</textarea>
       colorSecondary: document.getElementById('color-secondary'),
       colorAccent: document.getElementById('color-accent'),
       newMockup: document.getElementById('new-mockup-btn'),
+      interactionsPanel: document.getElementById('interactions-panel'),
+      liInteractions: document.getElementById('li-interactions'),
+      xInteractions: document.getElementById('x-interactions'),
+      liReactions: document.getElementById('li-reactions'),
+      liComments: document.getElementById('li-comments'),
+      liReposts: document.getElementById('li-reposts'),
+      xReplies: document.getElementById('x-replies'),
+      xReposts: document.getElementById('x-reposts'),
+      xLikes: document.getElementById('x-likes'),
+      xViews: document.getElementById('x-views'),
       scheduledDate: document.getElementById('scheduled-date'),
       saveCalendar: document.getElementById('save-calendar-btn'),
       calendarSaveStatus: document.getElementById('calendar-save-status'),
@@ -562,6 +603,24 @@ This preview is yours — type over it and download.</textarea>
       imageFilled: document.getElementById('image-filled'),
       imageThumb: document.getElementById('image-thumb')
     };
+
+    function formatCount(value) {
+      const num = Math.max(0, Number(value) || 0);
+      if (num >= 1000000) {
+        const compact = num / 1000000;
+        return `${compact >= 10 ? compact.toFixed(0) : compact.toFixed(1).replace(/\.0$/, '')}M`;
+      }
+      if (num >= 1000) {
+        const compact = num / 1000;
+        return `${compact >= 10 ? compact.toFixed(0) : compact.toFixed(1).replace(/\.0$/, '')}K`;
+      }
+      return String(Math.round(num));
+    }
+
+    function parseCount(value) {
+      const num = Number(value);
+      return Number.isFinite(num) && num >= 0 ? Math.round(num) : 0;
+    }
 
     function escapeHtml(value) {
       return value
@@ -692,9 +751,9 @@ This preview is yours — type over it and download.</textarea>
                 <span class="h-4 w-4 rounded-full bg-[#0A66C2] ring-2 ring-white"></span>
                 <span class="h-4 w-4 rounded-full bg-[#df704d] ring-2 ring-white"></span>
               </span>
-              24
+              ${formatCount(state.liReactions)}
             </span>
-            <span>8 comments · 3 reposts</span>
+            <span>${formatCount(state.liComments)} comments · ${formatCount(state.liReposts)} reposts</span>
           </div>
           <div class="mx-4 border-t border-[#0000001a]"></div>
           <div class="grid grid-cols-4 px-1 py-1.5 text-[12px] font-semibold text-[#00000099]">
@@ -731,10 +790,10 @@ This preview is yours — type over it and download.</textarea>
                 <p class="mt-1 text-[15px] leading-[1.35]">${formatText(state.text, 'x')}</p>
                 ${image}
                 <div class="mt-3 flex items-center justify-between text-[#71767b] text-[13px]">
-                  ${meta(xIcon('<path d="M19.4 10.6c0 3.3-2.7 6-6.1 6h-1.2L8.4 19.8v-3.2h-.8C4.8 16.6 2.6 14 2.6 10.6c0-3.5 2.9-6.4 6.4-6.4h4c3.5 0 6.4 2.9 6.4 6.4z"/>'), '12', 'Replies')}
-                  ${meta(xIcon('<path d="M4.8 8.8V6.8A1.8 1.8 0 0 1 6.6 5h10.2"/><path d="M14.6 3.2 17.8 5 14.6 6.8"/><path d="M19.2 15.2v2A1.8 1.8 0 0 1 17.4 19H7.2"/><path d="M9.4 20.8 6.2 19 9.4 17.2"/>'), '4', 'Reposts')}
-                  ${meta(xIcon('<path d="M16.6 4.6c-1.6 0-3 .9-3.9 2.3-.9-1.4-2.3-2.3-3.9-2.3C6.3 4.6 4.4 6.6 4.4 9.2c0 4 8.2 10.2 8.2 10.2s8.2-6.2 8.2-10.2c0-2.6-1.9-4.6-4.2-4.6z"/>'), '89', 'Likes')}
-                  ${meta(xIcon('<path d="M6 19v-6M12 19V8M18 19V4"/>'), '2.1K', 'Views')}
+                  ${meta(xIcon('<path d="M19.4 10.6c0 3.3-2.7 6-6.1 6h-1.2L8.4 19.8v-3.2h-.8C4.8 16.6 2.6 14 2.6 10.6c0-3.5 2.9-6.4 6.4-6.4h4c3.5 0 6.4 2.9 6.4 6.4z"/>'), formatCount(state.xReplies), 'Replies')}
+                  ${meta(xIcon('<path d="M4.8 8.8V6.8A1.8 1.8 0 0 1 6.6 5h10.2"/><path d="M14.6 3.2 17.8 5 14.6 6.8"/><path d="M19.2 15.2v2A1.8 1.8 0 0 1 17.4 19H7.2"/><path d="M9.4 20.8 6.2 19 9.4 17.2"/>'), formatCount(state.xReposts), 'Reposts')}
+                  ${meta(xIcon('<path d="M16.6 4.6c-1.6 0-3 .9-3.9 2.3-.9-1.4-2.3-2.3-3.9-2.3C6.3 4.6 4.4 6.6 4.4 9.2c0 4 8.2 10.2 8.2 10.2s8.2-6.2 8.2-10.2c0-2.6-1.9-4.6-4.2-4.6z"/>'), formatCount(state.xLikes), 'Likes')}
+                  ${meta(xIcon('<path d="M6 19v-6M12 19V8M18 19V4"/>'), formatCount(state.xViews), 'Views')}
                 </div>
               </div>
             </div>
@@ -798,6 +857,10 @@ This preview is yours — type over it and download.</textarea>
       els.textLabel.textContent = isX ? 'Tweet text' : isLinkedIn ? 'Post text' : 'Caption';
       els.text.maxLength = LIMITS[state.platform];
       els.mount.className = `relative w-full ${CARD_WIDTH[state.platform]}`;
+      const showInteractions = isLinkedIn || isX;
+      els.interactionsPanel?.classList.toggle('hidden', !showInteractions);
+      els.liInteractions?.classList.toggle('hidden', !isLinkedIn);
+      els.xInteractions?.classList.toggle('hidden', !isX);
     }
 
     function updateCharCount() {
@@ -905,6 +968,21 @@ This preview is yours — type over it and download.</textarea>
       state.text = els.text.value;
       updateCharCount();
       renderPreview();
+    });
+    const interactionBindings = [
+      ['liReactions', 'liReactions'],
+      ['liComments', 'liComments'],
+      ['liReposts', 'liReposts'],
+      ['xReplies', 'xReplies'],
+      ['xReposts', 'xReposts'],
+      ['xLikes', 'xLikes'],
+      ['xViews', 'xViews']
+    ];
+    interactionBindings.forEach(([elKey, stateKey]) => {
+      els[elKey]?.addEventListener('input', () => {
+        state[stateKey] = parseCount(els[elKey].value);
+        renderPreview();
+      });
     });
 
     document.getElementById('avatar-pick').addEventListener('click', () => els.avatarFile.click());
