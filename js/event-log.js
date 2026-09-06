@@ -15,16 +15,18 @@ function sanitize(data = {}) {
 
 export function logEvent(name, data = {}) {
   if (!name) return
+  const analytics = sanitize(data)
   const payload = {
     event: name,
     at: new Date().toISOString(),
     path: typeof location !== 'undefined' ? location.pathname : '',
-    ...sanitize(data)
+    ...analytics,
+    message: data.message ? String(data.message).slice(0, 4000) : undefined
   }
 
   try {
-    if (typeof window.vaTrack === 'function') window.vaTrack(name, sanitize(data))
-    else if (window.va) window.va('event', { name, data: sanitize(data) })
+    if (typeof window.vaTrack === 'function') window.vaTrack(name, analytics)
+    else if (window.va) window.va('event', { name, data: analytics })
   } catch {
     /* analytics must never affect the studio */
   }

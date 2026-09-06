@@ -425,6 +425,20 @@ This preview is yours — type over it and download.</textarea>
               <p class="text-[13px] text-zinc-500">Loading calendar…</p>
             </div>
           </div>
+
+          <div id="feedback-box" class="rounded-2xl bg-white/80 ring-1 ring-rose-200 p-4 space-y-3">
+            <h2 class="text-[12px] font-semibold uppercase tracking-[0.16em] text-rose-800">Your feedback matters!</h2>
+            <label for="feedback-input" class="sr-only">Feedback</label>
+            <textarea id="feedback-input" rows="4" maxlength="4000" placeholder="Tell us what to improve, what’s missing, or what you loved"
+              class="field w-full min-h-[96px] resize-none rounded-xl bg-white px-3.5 py-3 text-sm leading-relaxed ring-1 ring-rose-100 outline-none placeholder:text-zinc-400"></textarea>
+            <div class="flex items-center justify-between gap-3">
+              <p id="feedback-status" class="text-[12px] text-zinc-500"></p>
+              <button type="button" id="feedback-send"
+                class="h-10 shrink-0 rounded-xl bg-rose-700 px-4 text-[13px] font-semibold text-white hover:bg-rose-600 transition">
+                Send
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -593,6 +607,9 @@ This preview is yours — type over it and download.</textarea>
       saveCalendar: document.getElementById('save-calendar-btn'),
       calendarSaveStatus: document.getElementById('calendar-save-status'),
       calendarRoot: document.getElementById('calendar-root'),
+      feedbackInput: document.getElementById('feedback-input'),
+      feedbackSend: document.getElementById('feedback-send'),
+      feedbackStatus: document.getElementById('feedback-status'),
       editingPostLabel: document.getElementById('editing-post-label'),
       loginModal: document.getElementById('login-modal'),
       loginModalGoogle: document.getElementById('login-modal-google'),
@@ -1418,6 +1435,32 @@ This preview is yours — type over it and download.</textarea>
     els.newMockup?.addEventListener('click', () => startNewMockup());
     els.scheduledDate?.addEventListener('change', () => {
       if (els.scheduledDate.value) syncScheduledDate(els.scheduledDate.value);
+    });
+    els.feedbackSend?.addEventListener('click', async () => {
+      const message = (els.feedbackInput?.value || '').trim();
+      if (!message) {
+        if (els.feedbackStatus) els.feedbackStatus.textContent = 'Write a note first';
+        els.feedbackInput?.focus();
+        return;
+      }
+      els.feedbackSend.disabled = true;
+      if (els.feedbackStatus) els.feedbackStatus.textContent = 'Sending…';
+      try {
+        await waitForFreemium();
+        const user = window.SocialFreemium ? await window.SocialFreemium.getSessionUser() : null;
+        logStudioEvent('Feedback Submitted', {
+          platform: state.platform,
+          userId: user?.id || null,
+          message
+        });
+        if (els.feedbackInput) els.feedbackInput.value = '';
+        if (els.feedbackStatus) els.feedbackStatus.textContent = 'Thanks — we got it';
+      } catch (error) {
+        console.error(error);
+        if (els.feedbackStatus) els.feedbackStatus.textContent = 'Could not send. Try again.';
+      } finally {
+        els.feedbackSend.disabled = false;
+      }
     });
     els.saveCalendar?.addEventListener('click', async () => {
       await waitForFreemium();

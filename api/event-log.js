@@ -35,7 +35,8 @@ export default function handler(req, res) {
     profileName: payload.profileName || null,
     uploadedAvatar: payload.uploadedAvatar ?? null,
     attachedScreenshot: payload.attachedScreenshot ?? null,
-    error: payload.error || null
+    error: payload.error || null,
+    message: payload.message ? String(payload.message).slice(0, 4000) : null
   }
 
   console.log('[event]', entry)
