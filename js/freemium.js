@@ -60,6 +60,7 @@ function normalizeUsage(data, fallbackSignedIn) {
     is_premium: Boolean(data.is_premium),
     watermarked: Boolean(data.watermarked),
     post_id: data.post_id || null,
+    scheduled_date: data.scheduled_date || null,
     source: 'supabase'
   }
 }
@@ -125,12 +126,13 @@ export async function loadBrandKit() {
 export async function recordPost({ platform, content, scheduledDate, postId }) {
   const user = await getSessionUser()
   const before = localUsage(Boolean(user))
+  const date = String(scheduledDate || '').match(/^\d{4}-\d{2}-\d{2}/)?.[0] || null
   if (postId && user) {
     const { data, error } = await supabase.rpc('update_post', {
       p_id: postId,
       p_platform: platform,
       p_content: content || '',
-      p_scheduled_date: scheduledDate || null
+      p_scheduled_date: date
     })
     if (!error && data?.ok !== false) {
       return {
@@ -138,6 +140,7 @@ export async function recordPost({ platform, content, scheduledDate, postId }) {
         action: 'allow',
         allowed: true,
         post_id: postId,
+        scheduled_date: data?.post?.scheduled_date || date,
         updated: true,
         source: 'supabase'
       }
@@ -147,7 +150,7 @@ export async function recordPost({ platform, content, scheduledDate, postId }) {
     p_guest_id: getGuestId(),
     p_platform: platform,
     p_content: content || '',
-    p_scheduled_date: scheduledDate || undefined
+    ...(date ? { p_scheduled_date: date } : {})
   })
   if (error) {
     const retry = await supabase.rpc('create_post', {
@@ -167,5 +170,24 @@ export async function recordPost({ platform, content, scheduledDate, postId }) {
       source: 'local'
     }
   }
-  return normalizeUsage(data, Boolean(user))
+  const usage = normalizeUsage(data, Boolean(user))
+  if (usage.post_id && date && user && dateKeyLike(usage.scheduled_date) !== date) {
+    const patched = await supabase.rpc('update_post', {
+      p_id: usage.post_id,
+      p_platform: platform,
+      p_content: content || '',
+      p_scheduled_date: date
+    })
+    if (!patched.error && patched.data?.ok !== false) {
+      return {
+        ...usage,
+        scheduled_date: patched.data?.post?.scheduled_date || date
+      }
+    }
+  }
+  return { ...usage, scheduled_date: usage.scheduled_date || date }
+}
+
+function dateKeyLike(value) {
+  return String(value || '').match(/^\d{4}-\d{2}-\d{2}/)?.[0] || ''
 }

@@ -244,11 +244,7 @@
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <button type="button" id="header-upgrade-btn"
-            class="hidden h-9 rounded-lg bg-blue-600 px-3 text-[12px] font-semibold text-white hover:bg-blue-500 transition">
-            Upgrade
-          </button>
-          <span id="premium-badge" class="hidden h-9 items-center rounded-lg bg-emerald-50 px-3 text-[12px] font-semibold text-emerald-700 ring-1 ring-emerald-200">Premium</span>
+          <span id="premium-badge" class="hidden" aria-hidden="true"></span>
           <div id="google-login" class="shrink-0"></div>
         </div>
       </div>
@@ -263,8 +259,8 @@
             <button type="button" data-platform="instagram" title="Instagram" class="platform-btn h-9 rounded-lg text-[13px] font-medium">Instagram</button>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-2.5">
-            <div id="avatar-drop" class="dropzone flex items-center gap-2.5 rounded-xl border border-dashed border-zinc-300 bg-white px-2.5 py-2 cursor-pointer sm:w-[9.5rem] shrink-0">
+          <div class="flex flex-col sm:flex-row sm:items-stretch gap-2.5">
+            <div id="avatar-drop" class="dropzone flex items-center gap-2.5 rounded-xl border border-dashed border-zinc-300 bg-white px-2.5 h-[52px] cursor-pointer sm:w-[9.5rem] shrink-0">
               <img id="avatar-thumb" alt="" class="h-9 w-9 rounded-full object-cover bg-zinc-100 hidden" />
               <div id="avatar-placeholder" class="h-9 w-9 rounded-full bg-zinc-100 grid place-items-center text-[10px] font-semibold text-zinc-500">YN</div>
               <div class="min-w-0 flex-1">
@@ -275,41 +271,15 @@
               <input id="avatar-file" type="file" accept="image/*" />
             </div>
             <input id="name-input" type="text" value="Your Name" placeholder="Your name" aria-label="Profile name"
-              class="field flex-1 min-w-0 h-11 rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
+              class="field flex-1 min-w-0 h-[52px] rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
             <input id="headline-input" type="text" value="Founder · Building in public" placeholder="Your headline or bio" aria-label="Headline / bio"
-              class="field flex-1 min-w-0 h-11 rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
+              class="field flex-1 min-w-0 h-[52px] rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
             <input id="handle-input" type="text" value="you" placeholder="yourhandle" aria-label="Handle"
-              class="field hidden flex-1 min-w-0 h-11 rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
-            <label class="flex items-center justify-between gap-2 rounded-xl bg-white px-3 h-11 ring-1 ring-zinc-200 shrink-0">
+              class="field hidden flex-1 min-w-0 h-[52px] rounded-xl bg-white px-3.5 text-sm ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
+            <label class="flex items-center justify-between gap-2 rounded-xl bg-white px-3 h-[52px] ring-1 ring-zinc-200 shrink-0">
               <span class="text-[13px] text-zinc-700">Verified</span>
               <input id="verified-input" type="checkbox" checked class="h-4 w-4 accent-blue-600" />
             </label>
-          </div>
-          <div id="brand-kit-panel" class="rounded-xl bg-zinc-50 ring-1 ring-zinc-200 p-3 space-y-3">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <p class="text-[13px] font-semibold text-zinc-800">Brand kit</p>
-                <p id="brand-kit-hint" class="text-[12px] text-zinc-500">Sign in to save avatar, colors, and profile defaults</p>
-              </div>
-              <button type="button" id="new-mockup-btn" class="h-9 rounded-lg px-3 text-[12px] font-medium text-zinc-600 ring-1 ring-zinc-200 hover:bg-white">New mockup</button>
-            </div>
-            <div class="grid sm:grid-cols-[1fr_auto] gap-2.5">
-              <input id="avatar-url-input" type="url" placeholder="Avatar URL — paste a permanent image link"
-                class="field h-10 rounded-xl bg-white px-3 text-[13px] ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
-              <div class="flex items-center gap-2">
-                <label class="text-[11px] text-zinc-500">Colors</label>
-                <input id="color-primary" type="color" value="#2563eb" title="Primary" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
-                <input id="color-secondary" type="color" value="#0ea5e9" title="Secondary" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
-                <input id="color-accent" type="color" value="#ec4899" title="Accent" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
-              </div>
-            </div>
-            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-              <button type="button" id="brand-kit-btn"
-                class="h-10 rounded-xl px-3.5 text-[13px] font-medium text-zinc-700 bg-white ring-1 ring-zinc-200 hover:bg-zinc-50 transition">
-                Save brand kit
-              </button>
-              <p id="brand-kit-status" class="text-[12px] text-zinc-500"></p>
-            </div>
           </div>
 
           <div class="space-y-2">
@@ -352,13 +322,40 @@ This preview is yours — type over it and download.</textarea>
             </div>
             <input id="image-file" type="file" accept="image/*" />
           </div>
+
+          <div id="brand-kit-panel" class="rounded-xl bg-zinc-50 ring-1 ring-zinc-200 p-3 space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-[13px] font-semibold text-zinc-800">Brand kit</p>
+                <p id="brand-kit-hint" class="text-[12px] text-zinc-500">Sign in to save avatar, colors, and profile defaults</p>
+              </div>
+              <button type="button" id="new-mockup-btn" class="h-9 rounded-lg px-3 text-[12px] font-medium text-zinc-600 ring-1 ring-zinc-200 hover:bg-white">New mockup</button>
+            </div>
+            <div class="grid sm:grid-cols-[1fr_auto] gap-2.5">
+              <input id="avatar-url-input" type="url" placeholder="Avatar URL — paste a permanent image link"
+                class="field h-10 rounded-xl bg-white px-3 text-[13px] ring-1 ring-zinc-200 outline-none placeholder:text-zinc-400" />
+              <div class="flex items-center gap-2">
+                <label class="text-[11px] text-zinc-500">Colors</label>
+                <input id="color-primary" type="color" value="#2563eb" title="Primary" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
+                <input id="color-secondary" type="color" value="#0ea5e9" title="Secondary" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
+                <input id="color-accent" type="color" value="#ec4899" title="Accent" class="h-10 w-10 rounded-lg border border-zinc-200 bg-white p-1" />
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+              <button type="button" id="brand-kit-btn"
+                class="h-10 rounded-xl px-3.5 text-[13px] font-medium text-zinc-700 bg-white ring-1 ring-zinc-200 hover:bg-zinc-50 transition">
+                Save brand kit
+              </button>
+              <p id="brand-kit-status" class="text-[12px] text-zinc-500"></p>
+            </div>
+          </div>
         </div>
       </form>
 
-      <section id="preview-stage" class="preview-stage relative flex-1 flex flex-col items-center px-4 py-8 sm:py-10" data-platform="linkedin">
+      <section id="preview-stage" class="preview-stage relative flex-1 flex flex-col items-center px-4 py-10 sm:py-14" data-platform="linkedin">
         <div class="preview-vignette absolute inset-0"></div>
         <div class="relative z-10 w-full max-w-[560px] flex flex-col items-center">
-          <p class="mb-4 text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Live preview</p>
+          <p class="mb-5 text-[12px] font-semibold uppercase tracking-[0.22em] text-zinc-700">Live preview</p>
           <div id="preview-mount" class="relative w-full max-w-[560px]"></div>
           <div class="mt-6 w-full flex flex-col items-center gap-2.5">
             <button type="button" id="download-btn"
@@ -374,26 +371,31 @@ This preview is yours — type over it and download.</textarea>
                 Remove watermark and upgrade to premium
               </button>
             </div>
-            <div class="w-full flex flex-col sm:flex-row gap-2">
-              <label class="flex-1">
-                <span class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">Scheduled date</span>
-                <input id="scheduled-date" type="date" class="field h-11 w-full rounded-xl bg-white px-3 text-sm ring-1 ring-zinc-200 outline-none" />
-              </label>
-              <button type="button" id="save-calendar-btn"
-                class="sm:self-end h-11 rounded-xl px-4 text-[13px] font-medium text-zinc-700 bg-white ring-1 ring-zinc-200 hover:bg-zinc-50">
-                Save to calendar
-              </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="schedule-section" class="border-t border-zinc-200 bg-[#e8edf3]">
+        <div class="mx-auto w-full max-w-[560px] px-4 py-6 space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="text-[12px] font-medium uppercase tracking-wide text-zinc-500">Schedule</h2>
+            <p id="editing-post-label" class="hidden text-[12px] text-blue-700">Editing saved post</p>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-2">
+            <label class="flex-1">
+              <span class="mb-1.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-500">Scheduled date</span>
+              <input id="scheduled-date" type="date" class="field h-11 w-full rounded-xl bg-zinc-50 px-3 text-sm ring-1 ring-zinc-200 outline-none" />
+            </label>
+            <button type="button" id="save-calendar-btn"
+              class="sm:self-end h-11 rounded-xl px-4 text-[13px] font-medium text-zinc-600 bg-zinc-50 ring-1 ring-zinc-200 hover:bg-white">
+              Save to calendar
+            </button>
+          </div>
+          <p id="calendar-save-status" class="text-[12px] text-zinc-500"></p>
+          <div class="rounded-2xl bg-zinc-50 ring-1 ring-zinc-200 p-4">
+            <div id="calendar-root">
+              <p class="text-[13px] text-zinc-500">Loading calendar…</p>
             </div>
-            <p id="calendar-save-status" class="text-[12px] text-zinc-500"></p>
-            <section class="w-full rounded-2xl bg-white ring-1 ring-zinc-200 p-4 mt-1">
-              <div class="flex items-center justify-between gap-2 mb-3">
-                <h2 class="text-[14px] font-semibold tracking-tight">Calendar</h2>
-                <p id="editing-post-label" class="hidden text-[12px] text-blue-700">Editing saved post</p>
-              </div>
-              <div id="calendar-root">
-                <p class="text-[13px] text-zinc-500">Loading calendar…</p>
-              </div>
-            </section>
           </div>
         </div>
       </section>
@@ -961,11 +963,7 @@ This preview is yours — type over it and download.</textarea>
       state.isPremium = premium;
       state.watermark = !premium && action === 'watermark';
       if (els.upgradePanel) els.upgradePanel.classList.toggle('hidden', !state.watermark);
-      if (els.headerUpgrade) els.headerUpgrade.classList.toggle('hidden', premium || !user);
-      if (els.premiumBadge) {
-        els.premiumBadge.classList.toggle('hidden', !premium);
-        els.premiumBadge.classList.toggle('inline-flex', premium);
-      }
+      window.dispatchEvent(new CustomEvent('sm-premium-change', { detail: { isPremium: premium } }));
       if (els.brandKitHint) {
         els.brandKitHint.textContent = user
           ? 'Saved to your profile and applied to new mockups'
@@ -1085,10 +1083,18 @@ This preview is yours — type over it and download.</textarea>
     }
 
     let calendarApi = null;
+    function toDateKey(value) {
+      if (window.SocialCalendar?.dateKey) return window.SocialCalendar.dateKey(value);
+      const match = String(value || '').match(/^(\d{4}-\d{2}-\d{2})/);
+      return match ? match[1] : '';
+    }
+
     function syncScheduledDate(iso) {
-      state.scheduledDate = iso;
-      if (els.scheduledDate) els.scheduledDate.value = iso;
-      calendarApi?.setDate(iso);
+      const key = toDateKey(iso);
+      if (!key) return;
+      state.scheduledDate = key;
+      if (els.scheduledDate) els.scheduledDate.value = key;
+      calendarApi?.setDate(key);
     }
 
     function loadSavedPost(post, editing) {
@@ -1246,6 +1252,15 @@ This preview is yours — type over it and download.</textarea>
           postId: state.editingPostId
         });
         if (recorded.post_id) state.editingPostId = recorded.post_id;
+        const savedDate = toDateKey(recorded.scheduled_date) || state.scheduledDate;
+        if (savedDate) syncScheduledDate(savedDate);
+        calendarApi?.ensurePost({
+          id: recorded.post_id || state.editingPostId,
+          platform: state.platform,
+          content: state.text,
+          scheduled_date: savedDate,
+          created_at: new Date().toISOString()
+        });
         calendarApi?.refresh();
         applyUsage(recorded, user);
         logDownload(recorded);
@@ -1275,7 +1290,7 @@ This preview is yours — type over it and download.</textarea>
       if (event.target === els.loginModal) setModalOpen(els.loginModal, false);
     });
     els.upgradeBtn?.addEventListener('click', () => startUpgrade());
-    els.headerUpgrade?.addEventListener('click', () => startUpgrade());
+    window.addEventListener('sm-upgrade-click', () => startUpgrade());
     els.upgradeModalCheckout?.addEventListener('click', () => startUpgrade());
     els.upgradeModalClose?.addEventListener('click', () => setModalOpen(els.upgradeModal, false));
     els.upgradeModal?.addEventListener('click', (event) => {
@@ -1344,7 +1359,23 @@ This preview is yours — type over it and download.</textarea>
         if (els.calendarSaveStatus) {
           els.calendarSaveStatus.textContent = recorded.updated ? 'Post updated' : 'Saved to calendar';
         }
-        calendarApi?.refresh();
+        const savedDate = toDateKey(recorded.scheduled_date) || state.scheduledDate;
+        if (savedDate) syncScheduledDate(savedDate);
+        calendarApi?.ensurePost({
+          id: recorded.post_id || state.editingPostId,
+          platform: state.platform,
+          content: state.text,
+          scheduled_date: savedDate,
+          created_at: new Date().toISOString()
+        });
+        await calendarApi?.refresh();
+        calendarApi?.ensurePost({
+          id: recorded.post_id || state.editingPostId,
+          platform: state.platform,
+          content: state.text,
+          scheduled_date: savedDate,
+          created_at: new Date().toISOString()
+        });
       } catch (error) {
         console.error(error);
         if (els.calendarSaveStatus) els.calendarSaveStatus.textContent = error.message || 'Could not save post';
@@ -1398,12 +1429,14 @@ This preview is yours — type over it and download.</textarea>
     waitForFreemium().then(async () => {
       const today = window.SocialCalendar.localISODate();
       if (!state.scheduledDate) state.scheduledDate = today;
+      state.scheduledDate = toDateKey(state.scheduledDate) || today;
       if (els.scheduledDate) els.scheduledDate.value = state.scheduledDate;
       calendarApi = window.SocialCalendar.mountCalendar(els.calendarRoot, {
         getDate: () => state.scheduledDate || today,
         onSelectDate: (iso) => {
-          state.scheduledDate = iso;
-          if (els.scheduledDate) els.scheduledDate.value = iso;
+          const key = toDateKey(iso) || iso;
+          state.scheduledDate = key;
+          if (els.scheduledDate) els.scheduledDate.value = key;
         },
         onOpenPost: (post, editing) => loadSavedPost(post, editing)
       });

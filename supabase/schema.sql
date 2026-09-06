@@ -7,6 +7,10 @@ alter table public.posts
   add column if not exists guest_id text,
   add column if not exists watermarked boolean not null default false;
 
+-- posts.id was originally a FK to users(id), so new post UUIDs failed with 23503.
+-- The post row id must be independent; user_id is the user reference.
+alter table public.posts drop constraint if exists posts_id_fkey;
+
 alter table public.posts
   alter column id set default gen_random_uuid();
 
@@ -318,7 +322,7 @@ begin
         'id', p.id,
         'platform', p.platform,
         'content', p.content,
-        'scheduled_date', p.scheduled_date,
+        'scheduled_date', to_char(coalesce(p.scheduled_date, p.created_at::date), 'YYYY-MM-DD'),
         'created_at', p.created_at,
         'watermarked', p.watermarked
       ) order by coalesce(p.scheduled_date, p.created_at::date) desc, p.created_at desc)

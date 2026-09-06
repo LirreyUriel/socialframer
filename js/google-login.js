@@ -24,22 +24,60 @@ export async function signOut() {
   if (error) throw error
 }
 
+function userInitials(user) {
+  const meta = user?.user_metadata || {}
+  const given = String(meta.given_name || meta.first_name || '').trim()
+  const family = String(meta.family_name || meta.last_name || '').trim()
+  if (given && family) return `${given[0]}${family[0]}`.toUpperCase()
+  const name = meta.full_name || meta.name || ''
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+  }
+  if (parts[0]?.length) return parts[0].slice(0, 2).toUpperCase()
+  const email = user?.email || 'U'
+  return email.slice(0, 2).toUpperCase()
+}
+
 export function mountGoogleLogin(root) {
   if (!root) return
 
-  const render = (session) => {
+  let currentSession = null
+  let isPremium = false
+  let menuOpen = false
+
+  const render = (session = currentSession) => {
+    currentSession = session
     const user = session?.user
     if (user) {
       const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email || 'Signed in'
+      const initials = userInitials(user)
       root.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span class="hidden sm:inline max-w-[10rem] truncate text-[12px] font-medium text-zinc-600">${escapeHtml(name)}</span>
-          <button type="button" id="google-signout-btn"
-            class="h-9 rounded-lg px-3 text-[12px] font-medium text-zinc-600 ring-1 ring-zinc-200 hover:bg-zinc-50 hover:text-zinc-900 transition">
-            Sign out
+        <div class="relative">
+          <button type="button" id="account-menu-btn" aria-expanded="${menuOpen}" aria-haspopup="true"
+            title="${escapeHtml(name)}"
+            class="h-9 w-9 rounded-full bg-zinc-900 text-white text-[12px] font-semibold grid place-items-center ring-1 ring-zinc-200 hover:bg-zinc-800 transition">
+            ${escapeHtml(initials)}
           </button>
+          <div id="account-menu" class="${menuOpen ? '' : 'hidden'} absolute right-0 top-11 z-40 w-44 rounded-xl bg-white p-1.5 shadow-card ring-1 ring-zinc-200">
+            ${isPremium
+              ? `<p class="px-3 py-2 text-[12px] font-medium text-emerald-700">Premium</p>`
+              : `<button type="button" id="account-upgrade-btn" class="w-full rounded-lg px-3 py-2 text-left text-[13px] font-medium text-zinc-800 hover:bg-zinc-50">Upgrade</button>`}
+            <button type="button" id="google-signout-btn" class="w-full rounded-lg px-3 py-2 text-left text-[13px] font-medium text-zinc-800 hover:bg-zinc-50">Sign out</button>
+          </div>
         </div>`
+      root.querySelector('#account-menu-btn')?.addEventListener('click', (event) => {
+        event.stopPropagation()
+        menuOpen = !menuOpen
+        render()
+      })
+      root.querySelector('#account-upgrade-btn')?.addEventListener('click', () => {
+        menuOpen = false
+        render()
+        window.dispatchEvent(new Event('sm-upgrade-click'))
+      })
       root.querySelector('#google-signout-btn')?.addEventListener('click', async () => {
+        menuOpen = false
         await signOut()
         render(null)
       })
@@ -75,8 +113,18 @@ export function mountGoogleLogin(root) {
     window.dispatchEvent(new CustomEvent('sm-auth-change', { detail: { session: data.session } }))
   })
   supabase.auth.onAuthStateChange((_event, session) => {
+    menuOpen = false
     render(session)
     window.dispatchEvent(new CustomEvent('sm-auth-change', { detail: { session } }))
+  })
+  window.addEventListener('sm-premium-change', (event) => {
+    isPremium = Boolean(event.detail?.isPremium)
+    render()
+  })
+  document.addEventListener('click', (event) => {
+    if (!menuOpen || root.contains(event.target)) return
+    menuOpen = false
+    render()
   })
 }
 

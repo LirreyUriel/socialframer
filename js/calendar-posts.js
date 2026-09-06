@@ -4,14 +4,31 @@ import { getGuestId, getSessionUser } from './freemium.js'
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
+export function dateKey(value) {
+  if (!value) return ''
+  if (value instanceof Date) {
+    if (value.getUTCHours() === 0 && value.getUTCMinutes() === 0 && value.getUTCSeconds() === 0) {
+      return value.toISOString().slice(0, 10)
+    }
+    return localFromDate(value)
+  }
+  const match = String(value).match(/(\d{4}-\d{2}-\d{2})/)
+  return match ? match[1] : ''
+}
+
+function localFromDate(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
 export function localISODate(value = new Date()) {
-  const date = value instanceof Date ? value : new Date(`${value}T00:00:00`)
-  const offset = date.getTimezoneOffset() * 60000
-  return new Date(date.getTime() - offset).toISOString().slice(0, 10)
+  return dateKey(value) || dateKey(new Date())
 }
 
 export function postDate(post) {
-  return post?.scheduled_date || (post?.created_at || '').slice(0, 10)
+  return dateKey(post?.scheduled_date) || dateKey(post?.created_at)
 }
 
 export async function listMyPosts() {
@@ -29,14 +46,14 @@ export async function listMyPosts() {
       .eq('user_id', user.id)
       .order('scheduled_date', { ascending: false })
     if (tableError) throw new Error(tableError.message || error.message)
-    return { user, posts: rows || [] }
+    return { user, posts: extractPosts(rows) }
   }
   if (data?.error === 'signin_required') {
     const denied = new Error('Sign in to see your calendar')
     denied.code = 'signin_required'
     return { user: null, posts: [], error: denied }
   }
-  return { user, posts: Array.isArray(data?.posts) ? data.posts : [] }
+  return { user, posts: extractPosts(data) }
 }
 
 export async function saveStudioPost({ platform, content, scheduledDate, postId }) {
@@ -72,10 +89,10 @@ export async function saveStudioPost({ platform, content, scheduledDate, postId 
 }
 
 export function mountCalendar(root, options) {
-  if (!root) return { refresh() {}, setDate() {} }
+  if (!root) return { refresh() {}, setDate() {}, ensurePost() {} }
 
-  let cursor = startOfMonth(options.getDate?.() || localISODate())
-  let selected = options.getDate?.() || localISODate()
+  let cursor = startOfMonth(dateKey(options.getDate?.()) || localISODate())
+  let selected = dateKey(options.getDate?.()) || localISODate()
   let posts = []
   let status = { loading: false, error: '', signedIn: false }
 
@@ -95,15 +112,24 @@ export function mountCalendar(root, options) {
       <div class="grid grid-cols-7 gap-1">
         ${days.map((day) => {
           if (!day) return '<div></div>'
-          const iso = localISODate(day)
+          const iso = dateKey(day)
           const count = (byDate[iso] || []).length
           const isSelected = iso === selected
           const isToday = iso === localISODate()
+          const hasPosts = count > 0
           return `
             <button type="button" data-cal-day="${iso}"
-              class="relative min-h-[44px] rounded-lg px-1 py-1 text-[12px] ${isSelected ? 'bg-blue-600 text-white' : isToday ? 'bg-blue-50 text-blue-700' : 'text-zinc-700 hover:bg-zinc-50'}">
+              class="relative min-h-[44px] rounded-lg px-1 py-1 text-[12px] ${
+                isSelected
+                  ? 'bg-blue-600 text-white'
+                  : hasPosts
+                    ? 'bg-white text-zinc-800 ring-1 ring-zinc-300 font-medium'
+                    : isToday
+                      ? 'text-blue-700'
+                      : 'text-zinc-500 hover:bg-white/70'
+              }">
               ${day.getDate()}
-              ${count ? `<span class="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">${dotMarkup(byDate[iso], isSelected)}</span>` : ''}
+              ${hasPosts ? `<span class="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">${dotMarkup(byDate[iso], isSelected)}</span>` : ''}
             </button>`
         }).join('')}
       </div>
@@ -141,7 +167,7 @@ export function mountCalendar(root, options) {
     })
     root.querySelectorAll('[data-cal-day]').forEach((button) => {
       button.addEventListener('click', () => {
-        selected = button.dataset.calDay
+        selected = dateKey(button.dataset.calDay)
         options.onSelectDate?.(selected)
         render()
       })
@@ -179,15 +205,56 @@ export function mountCalendar(root, options) {
   return {
     refresh,
     setDate(iso) {
-      selected = iso
-      cursor = startOfMonth(iso)
+      selected = dateKey(iso) || selected
+      cursor = startOfMonth(selected)
+      render()
+    },
+    ensurePost(post) {
+      if (!post) return
+      const key = postDate(post)
+      if (post.id) {
+        const existing = posts.find((item) => String(item.id) === String(post.id))
+        const merged = { ...existing, ...post }
+        posts = posts.filter((item) => String(item.id) !== String(post.id)).concat(merged)
+      }
+      if (key) {
+        selected = key
+        cursor = startOfMonth(key)
+      }
       render()
     }
   }
 }
 
+function extractPosts(value) {
+  let data = value
+  if (typeof data === 'string') {
+    try { data = JSON.parse(data) } catch { return [] }
+  }
+  if (!data) return []
+  if (Array.isArray(data)) {
+    if (data[0] && (Array.isArray(data[0].posts) || data[0].ok !== undefined)) {
+      return extractPosts(data[0])
+    }
+    return data.map(normalizePost)
+  }
+  if (Array.isArray(data.posts) || typeof data.posts === 'string') {
+    return extractPosts(data.posts)
+  }
+  return []
+}
+
+function normalizePost(post) {
+  if (!post || typeof post !== 'object') return post
+  return {
+    ...post,
+    scheduled_date: dateKey(post.scheduled_date) || post.scheduled_date
+  }
+}
+
 function startOfMonth(iso) {
-  const date = new Date(`${iso}T00:00:00`)
+  const key = dateKey(iso) || localISODate()
+  const date = new Date(`${key}T00:00:00`)
   return new Date(date.getFullYear(), date.getMonth(), 1)
 }
 
