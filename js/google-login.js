@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.115.0'
+import { logEvent } from './event-log.js'
 
 const SUPABASE_URL = 'https://bawcojqjzbnlblhpvzja.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJhd2NvanFqemJubGJsaHB2emphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg2Mjg3ODUsImV4cCI6MjEwNDIwNDc4NX0.Q3q-yOjwCfNOH7Oep21g69z86d5VP3rq0jQ5mGgCX4g'
@@ -78,6 +79,7 @@ export function mountGoogleLogin(root) {
       })
       root.querySelector('#google-signout-btn')?.addEventListener('click', async () => {
         menuOpen = false
+        logEvent('Sign Out', { userId: user.id })
         await signOut()
         render(null)
       })
@@ -99,6 +101,7 @@ export function mountGoogleLogin(root) {
     root.querySelector('#google-login-btn')?.addEventListener('click', async (event) => {
       const button = event.currentTarget
       button.disabled = true
+      logEvent('Sign In Started', { source: 'header', provider: 'google' })
       try {
         await signInWithGoogle()
       } catch (error) {
@@ -112,10 +115,29 @@ export function mountGoogleLogin(root) {
     render(data.session)
     window.dispatchEvent(new CustomEvent('sm-auth-change', { detail: { session: data.session } }))
   })
-  supabase.auth.onAuthStateChange((_event, session) => {
+  supabase.auth.onAuthStateChange((event, session) => {
     menuOpen = false
     render(session)
     window.dispatchEvent(new CustomEvent('sm-auth-change', { detail: { session } }))
+    if (event === 'SIGNED_IN' && session?.user) {
+      const user = session.user
+      const seenKey = 'sm_logged_auth'
+      try {
+        if (sessionStorage.getItem(seenKey) === user.id) return
+        sessionStorage.setItem(seenKey, user.id)
+      } catch {
+        /* ignore */
+      }
+      const created = Date.parse(user.created_at)
+      const isNew = Number.isFinite(created) && Date.now() - created < 5 * 60 * 1000
+      logEvent(isNew ? 'Sign Up' : 'Sign In', {
+        provider: 'google',
+        userId: user.id
+      })
+    }
+    if (event === 'SIGNED_OUT') {
+      try { sessionStorage.removeItem('sm_logged_auth') } catch { /* ignore */ }
+    }
   })
   window.addEventListener('sm-premium-change', (event) => {
     isPremium = Boolean(event.detail?.isPremium)

@@ -167,6 +167,13 @@ export default async function handler(req, res) {
       email: data.customer?.email || data.details?.customer?.email || null,
       isPremium
     })
+    console.log('[event]', {
+      source: 'paddle',
+      event: isPremium ? 'Premium Granted' : 'Premium Revoked',
+      at: new Date().toISOString(),
+      eventType,
+      userId: result.userId || extractUserId(data) || null
+    })
     return res.status(200).json({ ok: true, eventType, ...result, is_premium: isPremium })
   } catch (error) {
     console.error('[paddle webhook]', error)

@@ -113,12 +113,14 @@
   </script>
   <script type="module">
     import { mountGoogleLogin, signInWithGoogle } from './js/google-login.js';
+    import { logEvent } from './js/event-log.js';
     import * as freemium from './js/freemium.js';
     import { openPremiumCheckout, preparePaddle } from './js/paddle-checkout.js';
     import * as brandKit from './js/brand-kit.js';
     import * as calendarPosts from './js/calendar-posts.js';
     mountGoogleLogin(document.getElementById('google-login'));
     window.signInWithGoogle = signInWithGoogle;
+    window.logStudioEvent = logEvent;
     window.SocialFreemium = freemium;
     window.openPremiumCheckout = openPremiumCheckout;
     preparePaddle();
@@ -1208,11 +1210,16 @@ This preview is yours — type over it and download.</textarea>
       updateCharCount();
     }
 
-    async function startUpgrade() {
+    async function startUpgrade(source = 'unknown') {
+      logStudioEvent('Upgrade Click', {
+        source,
+        platform: state.platform,
+        isPremium: state.isPremium
+      });
       await waitForFreemium();
       const user = await window.SocialFreemium.getSessionUser();
       if (!user) {
-        setModalOpen(els.loginModal, true);
+        openLoginModal('upgrade');
         return;
       }
       try {
@@ -1231,6 +1238,11 @@ This preview is yours — type over it and download.</textarea>
         });
       } catch (error) {
         console.error(error);
+        logStudioEvent('Checkout Failed', {
+          source,
+          provider: 'paddle',
+          error: error.code || error.message || 'checkout_failed'
+        });
         if (els.upgradeModalCopy) {
           els.upgradeModalCopy.textContent = error.code === 'not_configured'
             ? 'Add PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID in Vercel env vars to open checkout.'
@@ -1245,42 +1257,29 @@ This preview is yours — type over it and download.</textarea>
       return new Promise((resolve) => window.addEventListener('social-ready', resolve, { once: true }));
     }
 
+    function logStudioEvent(name, data) {
+      if (typeof window.logStudioEvent === 'function' && window.logStudioEvent !== logStudioEvent) {
+        window.logStudioEvent(name, data);
+        return;
+      }
+      if (typeof window.vaTrack === 'function') window.vaTrack(name, data || {});
+    }
+
+    function openLoginModal(source) {
+      logStudioEvent('Login Required', { source, platform: state.platform });
+      setModalOpen(els.loginModal, true);
+    }
+
     function logDownload(usage) {
-      const entry = {
-        at: new Date().toISOString(),
+      logStudioEvent('Download Image', {
         platform: state.platform,
         profileName: state.name,
-        content: state.text,
         uploadedAvatar: Boolean(state.avatar),
         attachedScreenshot: Boolean(state.image),
         watermark: Boolean(state.watermark),
         postCount: usage?.count ?? null,
         freemiumAction: usage?.action || null
-      };
-      const analyticsData = {
-        platform: entry.platform,
-        profileName: entry.profileName.slice(0, 255),
-        content: entry.content.slice(0, 255),
-        uploadedAvatar: entry.uploadedAvatar,
-        attachedScreenshot: entry.attachedScreenshot,
-        watermark: entry.watermark
-      };
-      if (typeof window.vaTrack === 'function') {
-        window.vaTrack('Download Image', analyticsData);
-      } else if (window.va) {
-        window.va('event', { name: 'Download Image', data: analyticsData });
-      }
-      fetch('/api/download-log', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify(entry),
-        keepalive: true,
-        cache: 'no-store',
-        redirect: 'error'
-      }).catch(() => {});
+      });
     }
 
     function waitForImages(root) {
@@ -1303,7 +1302,7 @@ This preview is yours — type over it and download.</textarea>
         ]);
         applyUsage(usage, user);
         if (usage.action === 'require_login') {
-          setModalOpen(els.loginModal, true);
+          openLoginModal('download');
           return;
         }
 
@@ -1355,6 +1354,7 @@ This preview is yours — type over it and download.</textarea>
     els.loginModalGoogle?.addEventListener('click', async (event) => {
       const button = event.currentTarget;
       button.disabled = true;
+      logStudioEvent('Sign In Started', { source: 'login_modal', provider: 'google', platform: state.platform });
       try {
         await waitForFreemium();
         await window.signInWithGoogle();
@@ -1367,9 +1367,9 @@ This preview is yours — type over it and download.</textarea>
     els.loginModal?.addEventListener('click', (event) => {
       if (event.target === els.loginModal) setModalOpen(els.loginModal, false);
     });
-    els.upgradeBtn?.addEventListener('click', () => startUpgrade());
-    window.addEventListener('sm-upgrade-click', () => startUpgrade());
-    els.upgradeModalCheckout?.addEventListener('click', () => startUpgrade());
+    els.upgradeBtn?.addEventListener('click', () => startUpgrade('watermark'));
+    window.addEventListener('sm-upgrade-click', () => startUpgrade('account_menu'));
+    els.upgradeModalCheckout?.addEventListener('click', () => startUpgrade('upgrade_modal'));
     els.upgradeModalClose?.addEventListener('click', () => setModalOpen(els.upgradeModal, false));
     els.upgradeModal?.addEventListener('click', (event) => {
       if (event.target === els.upgradeModal) setModalOpen(els.upgradeModal, false);
@@ -1416,7 +1416,7 @@ This preview is yours — type over it and download.</textarea>
       await waitForFreemium();
       const user = await window.SocialFreemium.getSessionUser();
       if (!user) {
-        setModalOpen(els.loginModal, true);
+        openLoginModal('calendar');
         return;
       }
       if (els.calendarSaveStatus) els.calendarSaveStatus.textContent = 'Saving…';
@@ -1429,7 +1429,7 @@ This preview is yours — type over it and download.</textarea>
           postId: state.editingPostId
         });
         if (recorded.action === 'require_login') {
-          setModalOpen(els.loginModal, true);
+          openLoginModal('calendar');
           return;
         }
         if (recorded.post_id) state.editingPostId = recorded.post_id;
@@ -1438,6 +1438,12 @@ This preview is yours — type over it and download.</textarea>
           els.calendarSaveStatus.textContent = recorded.updated ? 'Post updated' : 'Saved to calendar';
         }
         const savedDate = toDateKey(recorded.scheduled_date) || state.scheduledDate;
+        logStudioEvent('Save to Calendar', {
+          platform: state.platform,
+          scheduledDate: savedDate || state.scheduledDate,
+          updated: Boolean(recorded.updated),
+          userId: user.id
+        });
         if (savedDate) syncScheduledDate(savedDate);
         calendarApi?.ensurePost({
           id: recorded.post_id || state.editingPostId,
@@ -1476,7 +1482,7 @@ This preview is yours — type over it and download.</textarea>
         setBrandKitStatus('Brand kit saved');
       } catch (error) {
         if (error.code === 'premium_required') {
-          startUpgrade();
+          startUpgrade('brand_kit');
           return;
         }
         console.error(error);

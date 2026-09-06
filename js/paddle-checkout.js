@@ -1,5 +1,6 @@
 import { initializePaddle } from 'https://esm.sh/@paddle/paddle-js@1.6.5'
 import { getSessionUser } from './freemium.js'
+import { logEvent } from './event-log.js'
 
 let paddleClient = null
 let paddleConfig = null
@@ -39,11 +40,13 @@ async function getPaddle() {
     eventCallback(event) {
       const name = event?.name || ''
       if (name === 'checkout.completed') {
+        logEvent('Checkout Completed', { provider: 'paddle' })
         completedHandler?.(event)
         return
       }
       if (name === 'checkout.error' || name === 'checkout.warning') {
         checkoutError = paddleMessage(event) || 'Paddle checkout failed'
+        logEvent('Checkout Failed', { provider: 'paddle', error: checkoutError, source: name })
         console.error('Paddle checkout event', event)
       }
     }
@@ -95,6 +98,7 @@ export async function openPremiumCheckout({ onCompleted } = {}) {
   }
 
   paddle.Checkout.open(openOptions)
+  logEvent('Checkout Opened', { provider: 'paddle', userId: user.id })
 
   await new Promise((resolve) => setTimeout(resolve, 800))
   if (checkoutError) {

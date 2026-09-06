@@ -1,23 +1,25 @@
 export default function handler(req, res) {
-  res.setHeader('Allow', 'POST');
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Allow', 'POST')
+  res.setHeader('Cache-Control', 'no-store')
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
+    return res.status(405).json({ ok: false, error: 'Method Not Allowed' })
   }
 
-  let payload = req.body;
+  let payload = req.body
   if (typeof payload === 'string') {
     try {
-      payload = JSON.parse(payload || '{}');
+      payload = JSON.parse(payload || '{}')
     } catch {
-      return res.status(400).json({ ok: false, error: 'Invalid JSON' });
+      return res.status(400).json({ ok: false, error: 'Invalid JSON' })
     }
   }
-  payload = payload && typeof payload === 'object' ? payload : {};
+  payload = payload && typeof payload === 'object' ? payload : {}
 
-  console.log('[download]', {
-    at: payload.at,
+  console.log('[event]', {
+    source: 'studio',
+    event: 'Download Image',
+    at: payload.at || new Date().toISOString(),
     platform: payload.platform,
     profileName: payload.profileName,
     uploadedAvatar: payload.uploadedAvatar,
@@ -26,7 +28,7 @@ export default function handler(req, res) {
     postCount: payload.postCount,
     freemiumAction: payload.freemiumAction,
     content: payload.content
-  });
+  })
 
-  return res.status(204).end();
+  return res.status(204).end()
 }
