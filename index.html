@@ -46,9 +46,15 @@
           {
             "@type": "Offer",
             "name": "SocialPostMockup Premium",
-            "price": "9.00",
+            "price": "5.99",
             "priceCurrency": "USD",
-            "url": "https://socialmockup.online/pricing.html"
+            "url": "https://socialmockup.online/pricing.html",
+            "priceSpecification": {
+              "@type": "UnitPriceSpecification",
+              "price": "5.99",
+              "priceCurrency": "USD",
+              "billingDuration": "P1M"
+            }
           }
         ]
       },
@@ -76,7 +82,7 @@
             "name": "How much is Premium?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "SocialPostMockup Premium is USD $9 as a one-time purchase. It includes unlimited watermark-free PNG exports. Taxes may be added at checkout. See the Pricing page for full details."
+              "text": "SocialPostMockup Premium is USD $5.99 per month. It includes unlimited watermark-free PNG exports while the subscription is active. Taxes may be added at checkout. See the Pricing page for full details."
             }
           },
           {
@@ -481,7 +487,7 @@ This preview is yours — type over it and download.</textarea>
             <p>
               SocialPostMockup is a free social media post mockup generator for founders, marketers, and creators.
               Frame screenshots and write captions in a live preview, then export a pixel-perfect PNG. The first download is free without an account.
-              Premium is a USD $9 one-time purchase for unlimited watermark-free exports — see
+              Premium is USD $5.99 per month for unlimited watermark-free exports — see
               <a href="/pricing.html" class="text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Pricing</a>.
             </p>
             <p>
@@ -528,7 +534,7 @@ This preview is yours — type over it and download.</textarea>
             </div>
             <div class="space-y-1.5">
               <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">How much is Premium?</h3>
-              <p>Premium is USD $9 as a one-time purchase for unlimited watermark-free PNG exports. Taxes may be added at checkout. Full details are on the <a href="/pricing.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Pricing</a> page.</p>
+              <p>Premium is USD $5.99 per month for unlimited watermark-free PNG exports. Taxes may be added at checkout. Cancel anytime. Full details are on the <a href="/pricing.html" class="text-zinc-800 underline decoration-zinc-300 underline-offset-2 hover:text-blue-600">Pricing</a> page.</p>
             </div>
             <div class="space-y-1.5">
               <h3 class="text-zinc-900 text-[13px] font-semibold tracking-tight">Do I need an account?</h3>
@@ -565,7 +571,7 @@ This preview is yours — type over it and download.</textarea>
   <div id="upgrade-modal" class="hidden fixed inset-0 z-50 grid place-items-center px-4 modal-overlay" role="dialog" aria-modal="true" aria-labelledby="upgrade-modal-title">
     <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-card ring-1 ring-zinc-200">
       <h2 id="upgrade-modal-title" class="text-[18px] font-semibold tracking-tight text-zinc-900">Upgrade to premium</h2>
-      <p id="upgrade-modal-copy" class="mt-2 text-[14px] leading-relaxed text-zinc-600">Premium is USD $9 one-time. It removes the watermark and unlocks unlimited clean PNG downloads. Checkout is processed by Paddle. See <a href="/pricing.html" class="text-blue-600 underline underline-offset-2">full pricing</a>.</p>
+      <p id="upgrade-modal-copy" class="mt-2 text-[14px] leading-relaxed text-zinc-600">Premium is USD $5.99 per month. It removes the watermark and unlocks unlimited clean PNG downloads. Checkout is processed by Paddle. See <a href="/pricing.html" class="text-blue-600 underline underline-offset-2">full pricing</a>.</p>
       <button type="button" id="upgrade-modal-checkout" class="mt-5 w-full h-11 rounded-xl bg-blue-600 text-white text-[14px] font-semibold hover:bg-blue-500 transition">Continue to Paddle checkout</button>
       <button type="button" id="upgrade-modal-close" class="mt-2 w-full h-10 rounded-xl text-[13px] font-medium text-zinc-500 hover:text-zinc-800 hover:bg-zinc-50 transition">Not now</button>
     </div>
